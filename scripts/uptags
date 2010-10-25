@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# This script is used to update the filenametags for lookupfile plugin, and the
+# ctags & cscope database
+# Author  : Easwy Yang
+# Homepage: http://easwy.com/
+# Date    : Mon Oct 25 16:01:48 CST 2010
+
+# Default project type
+PRJ_TYPE=java
+
+case ${PRJ_TYPE} in
+    java)
+    SRC_DIR="src"
+    find ${SRC_DIR}                         \
+                -name ".svn" -prune         \
+                -or -name ".git" -prune     \
+                -or -name "*.java"          \
+                > cscope.files
+    ;;
+    cpp)
+    SRC_DIR="."
+    find ${SRC_DIR}                         \
+                -name ".svn" -prune         \
+                -or -name ".git" -prune     \
+                -or -name "*.h"             \
+                -or -name "*.cpp"           \
+                -or -name "*.cc"            \
+                > cscope.files
+    ;;
+    *)
+    ;;
+esac
+
+# generate tag file for lookupfile plugin
+echo "!_TAG_FILE_SORTED	2	/2=foldcase/" > ./filenametags
+find ${SRC_DIR}                         \
+            -name ".svn" -prune         \
+            -or -name ".git" -prune     \
+            -or -type f                 \
+            -printf "%f\t%p\t1\n"       \
+            | sort -f >> ./filenametags
+
+# Generate cscope database & tags
+cscope -bkq -i cscope.files
+ctags --c++-kinds=+p --fields=+iaS --extra=+q -L cscope.files
+
+exit 0

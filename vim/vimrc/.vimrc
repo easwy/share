@@ -2,11 +2,12 @@
 " This vimrc is based on the vimrc by Amix:
 "       http://amix.dk/vim/vimrc.html
 " You can find the latest version on:
-"       http://easwy.com/viewvc/repos/share/vim/.vimrc
+"       http://github.com/easwy/share/tree/master/vim/vimrc/
 "
-" Maintainer: Easwy Yang
-" Version: 0.2
-" Last Change: 2009/01/31
+" Maintainer:  Easwy Yang
+" Last Change: Mon Oct 25 16:04:31 CST 2010
+" Homepage:    http://easwy.com/
+" Version:     0.2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

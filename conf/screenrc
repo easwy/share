@@ -1,0 +1,28 @@
+# Customized Screenrc
+# Author  : Easwy Yang
+# Homepage: http://easwy.com/
+# Date    : Mon Oct 25 16:00:17 CST 2010
+
+# Don't use "window 0"
+bind c screen 1
+#bind 0 select 10
+screen 1
+
+# no welcome msg
+startup_message off
+
+setenv LC_CTYPE en_US.UTF-8
+defutf8 on
+vbell off
+
+altscreen on
+autodetach on
+defscrollback 5000
+
+#termcapinfo rxvt* 'hs:ts=\E]2;:fs=\007:ds=\E]2;screen (^En ^Et)\007'
+termcapinfo rxvt* 'hs:ts=\E]2;:fs=\007:ds=\E]2;\007'
+
+# status line at the bottom, where it belongs
+caption always "%{= kw}%-w%{= kG}%{+b}[%n %t]%{-b}%{= kw}%+w %=%d %M %0c %{g}%H%{-}"
+#hardstatus alwayslastline "%{= kw}%-w%{= kG}%{+b}[%n %t]%{-b}%{= kw}%+w %=%d %M %0c %{g}%H%{-}"
+#hardstatus alwayslastline '%{gk}[ %{G}%H %{g}][%= %{wk}%?%-Lw%?%{=b kR}[%{W}%n*%f %t%?(%u)%?%{=b kR}]%{= kw}%?%+Lw%?%?%= %{g}][%{Y}%l%{g}]%{=b C}[ %m/%d %c ]%{W}'
