@@ -1,0 +1,140 @@
+snippet main
+	def main (args: Array [String]) {
+		${1:/* code */}
+	}
+snippet /*
+	/** ${1}
+	 */
+snippet p
+	println (${1})
+snippet .t
+	.toString
+snippet pr
+	private
+snippet fi
+	final
+snippet ab
+	abstract
+snippet re
+	return
+snippet try
+	try {
+	  ${1}
+	} catch {
+	  case ${2} =>
+	    ${3}
+	}
+snippet th
+	throw ${1}
+snippet im
+	import ${1}
+snippet pa
+	package ${1}
+snippet s.i
+	scala.io.
+snippet s.u
+	scala.util.
+snippet s.x
+	scala.xml.
+snippet j.i
+	java.io.
+snippet j.l
+	java.lang.
+snippet j.u
+	java.util.
+snippet if
+	if (${1}) {
+	  ${2}
+	}
+snippet el
+	else {
+	  ${1}
+	}
+snippet ei
+	else if (${1}) {
+	  ${2}
+	}
+snippet wh
+	while (${1}) {
+	  ${2}
+	}
+snippet ma
+	match {
+	  ${1}
+	}
+snippet ca
+	case ${1} => ${2}
+snippet cc
+	case class ${1}
+snippet co
+	case object ${1}
+snippet ob
+	object ${1:`Filename()`}
+snippet cl
+	class ${1}
+snippet tr
+	trait ${1} {
+	  ${2}
+	}
+snippet as
+	assert (${1})
+snippet mapper
+	/** ${1:comment}
+	 */
+	class ${2:klass} extends LongKeyedMapper[$2] with IdPK {
+	  def getSingleton = $2
+	  ${3}
+	}
+
+	/** $2 singleton
+	 */
+	object $2 extends $2
+	  with LongKeyedMetaMapper[$2] {
+	}
+snippet def2
+	/** ${1}
+	 *  @param $3 ...
+	 *  @param $5 ...
+	 */
+	def ${2}(${3}: ${4}, ${5}: ${6})
+snippet def1
+	/** ${1}
+	 *  @param $3 ...
+	 */
+	def ${2}(${3:x}: ${4:NodeSeq})${5: :NodeSeq}
+snippet def0
+	/** ${1}
+	 */
+	def ${2}()
+snippet def
+	/** ${1}
+	 */
+	def ${2}
+snippet \
+	(${1})${2} =>
+		${3}
+snippet imports
+	import net.liftweb.http._
+	import S._
+	import net.liftweb.util._
+	import Helpers._
+	import scala.xml._
+	import com.lawsite.logic._
+snippet importm
+	import net.liftweb.util._
+	import net.liftweb.mapper._
+	import com.lawsite.model._
+snippet fk
+	MappedLongForeignKey(this, ${1})
+snippet oe
+	object ${1} extends ${2}
+snippet m2m
+	object ${1:other}s extends HasManyThrough(this, ${2:Other}, ${3:JoinModel}, $3.$1, $3.${4})
+snippet =
+	= {
+	  ${1}
+	}
+snippet ex
+	extends 
+snippet ov
+	override 

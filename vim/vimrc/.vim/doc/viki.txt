@@ -1,0 +1,1077 @@
+*viki.txt*              Viki - A Pseudo Local Wiki Tool
+
+                        Viki MANUAL
+                        Thomas Link (samul AT web de)
+
+
+================================================================================
+                                                    *viki-description*
+Description~
+
+This plugin adds wiki-like hypertext capabilities to Vim. You can use viki as 
+a "minor" mode (i.e., as an add-on to any other mode) or as a full-fledged 
+wiki mode. There is also an add-on plugin for "wikifying" latex documents by 
+turning some latex commands into wiki names. If viki is properly configured, 
+activating a reference to an image, a webpage etc. will view that resource in 
+an external viewer.
+
+From http://sourceforge.net/projects/deplate/ you can download a ruby based 
+tool to convert viki markup to LaTeX, HTML, or DocBook. On its homepage 
+(http://deplate.sf.net) you can read a more detailled specification of the 
+markup.
+
+MINOR WIKI MODE:
+Just type |:VikiMinorMode| and all wiki names and URLs will be highlighted.  
+When the cursor is over a wiki name, you can press <c-cr> to jump to (or 
+create) the referred page. Pressing <LocalLeader>vb brings you back to the 
+original document. Alternatively, you can use <m-leftmouse> and <m-rightmouse> 
+to jump back and forth. (NOTE: In minor mode, it's possible that viki words 
+and URLs are not highlighted when they are included in some syntactic 
+regions.)
+
+FULL WIKI MODE:
+In full mode, viki becomes a personal wiki 
+(http://c2.com/cgi/wiki?PersonalWiki). Set 'filetype' to viki or execute 
+|:VikiMode|. The full wiki mode is like the minor mode but with folding 
+support, syntax highlighting (for headings, lists, tables, textstyles etc.), 
+and additional key bindings (i.e., you can press <c-tab> or <s-c-tab> to move 
+the cursor to the next/previous viki name).
+
+BUT HEY, WHAT IS A WIKI ANYWAY:
+Among the vast amount of possible definitions, I prefer this one, which is my 
+own anyway :-): a wiki is a simple way of creating hypertexts. In its basic 
+form creating a hyperlink is as easy as writing a word in CamelCase (although 
+this sometimes turn out to be more annoying than useful) or by a rather 
+minimalist markup -- in the case of viki, this would be [[destination]] or 
+[-destination-].
+
+You begin by creating a directory where your wiki files should go to and by 
+creating a wiki index -- a master file that contains references to sub-pages. 
+After a while you end up with many small, tightly interlinked files/notes.
+
+Wikis also come with a rather subtle markup. Here is a simple comparison of 
+two examples of LaTeX and viki markup so that you get the idea of what it 
+looks like:
+
+LaTeX: \section{Title}
+Viki:  * Title
+
+LaTeX: \emph{text}
+Viki:  __text__
+
+And some wikis provide tools for translating this markup to other formats 
+(like viki does in the form of the "deplate" program, which can translate viki 
+markup to LaTeX, HTML, and Docbook). Unfortunately, about every wiki has its 
+own markup. 
+
+
+================================================================================
+                                                    *viki-installation*
+Installation~
+
+Extract viki.zip to your local vimfiles directory (see also 
+|add-global-plugin|) so that you get: >
+
+    (Linux etc.) $HOME/.vim/
+    (Windows) $VIM/vimfiles/
+        compiler/  doc/  etc/ ftplugin/  plugin/  syntax/
+
+These directories are used for installing user-specific plugins. It's possible 
+that these directories already exist and are populated with other plugins -- 
+in which case you probably already knew this. ;-)
+
+Uninstalling viki requires deleting the files from the viki archive by hand. 
+Alternatively, you can feed the file etc/Viki.lst to rm: >
+    
+    cd $HOME/.vim/
+    rm -i `cat etc/Viki.lst`
+
+Viki will be automatically loaded when starting vim. In case you have vim 
+already running and don't want to restart it, you can also type: >
+    
+    :runtime plugin/viki.vim
+
+Then run >
+
+(Linux etc.) >
+    :helptags $HOME/.vim/doc
+
+(Windows) >
+    :helptags $VIM/vimfiles/doc
+
+Viki doesn't set the viki filetype for you. How you set the filetype is up to 
+you to decide. Basically, there are two possibilities: based on a suffix or 
+based on the location. See below for examples.
+
+
+Customization:                                      *viki-customization*
+It's probably a good idea to check the values of the following variables:
+
+    - |g:vikiUpperCharacters| and |g:vikiLowerCharacters|; for the most 
+      commonly used foreign language characters in a Western European 
+      context set these variables to something like (this refers to the 
+      characters allowed in simple viki names and in anchors; for East Asian 
+      languages you probably prefer to use quoted viki names anyway): >
+        
+        " this is in iso-latin-1
+        let g:vikiLowerCharacters = "a-zäöüßáàéèíìóòçñ"
+        let g:vikiUpperCharacters = "A-ZÄÖÜ"
+<
+    - |g:vikiUseParentSuffix| (see also |viki-names|); I personally prefer 
+      this to be ON >
+
+        let g:vikiUseParentSuffix = 1
+<
+    - |vikiNameTypes| (see |viki-names|): control which type of viki names you 
+      want to use (this allows you to turn off, e.g., simple viki names)
+
+You might also need to configure some external programs (use the variables 
+g:vikiOpenUrlWith_{PROTOCOL} and g:vikiOpenFileWith_{SUFFIX}) like in this 
+example: >
+
+    let g:vikiOpenUrlWith_mailto = 'thunderbird -compose %{URL}'
+    let g:vikiOpenFileWith_html  = "silent !firefox %{FILE}"
+    let g:vikiOpenFileWith_ANY   = "silent !start %{FILE}"
+
+This way, if you had, e.g., pdftotext (from the xpdf distribution) installed, 
+you could make viki to open references to pdf files right in VIM: >
+
+    fun! ConvertPDF()
+        if !exists("b:convertedPDF")
+            exec "cd ". expand("%:p:h")
+            exec "%!pdftotext ". expand("%:t") ." -"
+            :%!par 72w
+            cd -
+            setlocal noswapfile buftype=nowrite
+            let b:convertedPDF = 1
+        endif
+    endf
+    let g:vikiOpenFileWith_pdf = 'call VikiOpenLink("%{FILE}", "", 1)|silent call ConvertPDF()'
+
+Later on, you probably want to define some intervikis. A |interviki| is a 
+shortcut to a different viki directory/namespace, so that you have to care 
+less about page names: >
+
+    call VikiDefine('SCI', $HOME."/Projects/Sci/Ideas", ".txt")
+
+This could then be accessed as SCI::ThisIdea, which would refer to the file 
+"~/Projects/Sci/Ideas/ThisIdea.txt".
+
+In order to use the LaTeX enabled viki variant, add this to your |vimrc| file: >
+
+    au FileType tex let b:vikiFamily="LaTeX"
+
+In order to automatically set |deplate| as the compiler for viki files: >
+
+    " we want to allow deplate to execute ruby code and external helper 
+    " application
+    let g:deplatePrg = "deplate -x -X "
+    au FileType viki compiler deplate
+
+Some users might want to automatically set the filetype to viki depening on 
+the file extension. This can be done using |:autocmd|: >
+
+    let g:vikiNameSuffix=".viki"
+    autocmd! BufRead,BufNewFile *.viki set filetype=viki
+
+You can also use |:autocmd| to set the filetype depending on the path: >
+
+    autocmd! BufRead,BufNewFile $HOME/MyWiki/* set filetype=viki
+
+If the variables b:getVikiLink or b:getExtVikiLink exist, their values are 
+used as _function_ names for returning the current viki name's definition. A 
+viki definition is a "multvalue" (see multvals.vim, vimscript #171) of the 
+three elements name, destination, anchor with g:vikiDefSep as the separator.
+
+If the variables b:editVikiPage or b:createVikiPage exist, their values are 
+interpreted as _command_ names for editing readable or creating new wiki 
+pages.
+
+For a better highlighting of viki files, also check out these variables:
+
+    - |g:vikiTypewriterFont| (see |viki-textstyles|)
+    - |g:vikiHeadingFont| (see |viki-headings|)
+    - |g:vikiHyperLinkColor|
+    - |g:vikiInexistentColor|
+
+                                                    *viki-indent-disable*
+In order to disable the indentation plugin, define the variable g:vikiNoIndent 
+and set it to whatever you want.
+
+
+===============================================================================
+                                                    *viki-requirements*
+Requirements~
+
+- multvals.vim (vimscript #171, >= 3.8.0)
+
+
+Optional Enhancements~
+
+- genutils.vim (vimscript #197 for saving back references; but see 
+  |g:vikiSaveHistory|)
+- imaps.vim (vimscript #244 or #475 for |:VimQuote|)
+- kpsewhich (not a vim plugin :-) for LaTeX support
+
+
+================================================================================
+                                                    *viki-names*
+Viki Names~
+
+A viki name is either:
+
+                                                    *viki-simple-names*
+    1. Simple wiki names -- these refer to files in the same directory as the 
+       current file:
+
+        a. a word in CamelCase
+            VikiName
+            VikiName#anchor
+
+            NOTE: A simple viki name may include characters from 
+            |g:vikiUpperCharacters| and |g:vikiLowerCharacters|.
+
+        b. some text between "[-" and "-]"
+            [-name-]
+            [-some name-]#there
+
+            NOTE: "[--]" refers to the current file.
+
+            NOTE: Anyways, the characters []:*&?<>/|\" are not allowed in 
+            names as they usually cause trouble when included in file names.
+
+                                                    *interviki*
+         c. an "inter wiki" name, where the first part (in upper-case letters) 
+         is a shortcut to some other viki, so that you have to care less about 
+         page names
+
+            OTHERVIKI::VikiName
+            OTHERVIKI::VikiName#there
+            OTHERVIKI::[-some name-]
+            OTHERVIKI::[-some name-]#there
+
+            E.g., if you had two intervikis defined, say SCI and COMP, you 
+            could the refer to their pages as in: >
+
+                Couldn't SCI::ThisIdeaOfMine be combined with COMP::ThisIdeaOfMine?
+<
+            NOTE: You can define intervikis with the VikiDefine command: >
+
+                VikiDefine OTHERVIKI /home/t/Wiki .vik
+
+<           Then OTHERVIKI::VikiName points to the file "/home/t/Wiki/VikiName.vik".
+
+            NOTE: Set the string variable g:vikiInter{NAME}_suffix (see 
+            |curly-braces-names|) in order to override the settings of 
+            |b:vikiNameSuffix| and |g:vikiUseParentSuffix| for references to 
+            the other viki.
+
+        NOTE: If the variable |b:vikiNameSuffix| is defined, it will be added to 
+        simple wiki names so that the simple wiki name "OtherFile" refers to 
+        "OtherFile.suffix" -- e.g. for interlinking LaTeX-files.  
+        Alternatively, you can set |g:vikiUseParentSuffix| to non-zero in order 
+        to make viki always append the "parent" file's suffix to the 
+        destination file.
+
+                                                    *viki-extended-names*
+    2. an extended wiki name of the form:
+
+            [[destination]]
+            [[destination][name]]
+            [[destination#anchor][name]]
+            [[#anchor]]
+            [[#anchor][name]]
+
+        NOTE: The destination name is taken literally, i.e. variables like 
+        |g:vikiUseParentSuffix| or |b:vikiNameSuffix| have no effect.
+
+        NOTE: Opening extended wiki names referring to files with suffixes 
+        matching one of |vikiSpecialFiles| (e.g. [[test.jpg]]) can be 
+        delegated to the operating system -- see |VikiOpenSpecialFile()|. The 
+        same is true for names matching |vikiSpecialProtocols|, which will be 
+        opened with |VikiOpenSpecialProtocol()|.
+
+        NOTE: In extended wiki names, destination path is relative to the 
+        document's current directory if it doesn't match 
+        "^\(\/\|[a-z]:\|[a-z]\+://\)". I.e.  [[../test]] refers to the 
+        directory parent to the document's directory. A tilde at the beginning 
+        will be replaced with $HOME.
+
+                                                    *viki-urls*
+    3. an URL
+        It is assumed that these URLs should be opened with an external 
+        program; this behaviour can be changed by redefining the function 
+        |VikiOpenSpecialProtocol()|.
+
+Adding #[a-z0-9]\+ to the wiki name denotes a reference to a specific anchor.  
+Examples for wiki names referring to an anchor: >
+
+	ThatPage#there
+	[[anyplace/filename.txt#there]]
+	[[anyplace/filename.txt#there][Filename]]
+
+A anchor is marked as "^".b:commentStart."\?#[a-z0-9]\+" in the destination
+file. If |b:commentStart| is not defined, the EnhancedCommentify-variables or
+|&commentstring| will be used instead.  Examples ('|' = beginning of line):
+
+    - LaTeX file, b:commentStart is set to "%"
+      |%#anchor
+      |#anchor
+    - C file, |&commentstring| is set to "/*%s*/"
+      |/*#anchor */
+    - Text file, b:commentStart is undefined
+      |#anchor
+
+NOTE: If "#" is the comment character (as in ruby), a space should follow the
+comment character in order to distinguish comments from anchors.
+
+NOTE: In "full" viki mode (when invoked via VikiMode) comments are marked 
+with "%" by default (see g:vikiCommentStart). An anchor has thus to be 
+written as in the LaTeX example.
+
+NOTE: |deplate| attaches an anchor to the previous element (e.g. |viki-tables|).
+
+
+================================================================================
+                                                    *viki-markup*
+Pseudo Markup~
+
+The pseudo markup is to some degree compatible with emacs-wiki, which in turn  
+is to some degree compatible with some other wiki -- i.e., it's compatible 
+enough to edit and work with files in emacs-wiki markup, but in some aspects 
+it's more restrictive. Unfortunately, as there is currently no 
+html-translator/exporter for this markup, it's quite useless for the moment.
+But it looks nice on the screen.
+
+
+                                                    *viki-headings*
+Headings~
+* Level 1
+** Level 2
+...
+
+    NOTE: Headings can span more than one line by putting a backslash ('\') at 
+    the end of the line.
+    
+    NOTE: If |g:vikiHeadingFont| is defined, the heading will be set in this 
+    font.
+
+
+                                                    *viki-lists*
+Lists: (indented)~
+
+    - Item
+        * Item
+            + Item
+                1. Item 1
+                    a. Item a
+                    B. Item B
+        # Item
+            # Item 1
+            # Item 2
+                @ Item A
+                @ Item B
+
+NOTE: "@" (unordered lists) and "#" (ordered lists) are the preferred markers.
+
+
+                                                    *viki-descriptions*
+Descriptions: (indented)~
+
+    Item :: Description
+
+
+                                                    *viki-tasks*
+Tasks: (indented)~
+emacs-planer compatible mode: >
+
+    #A1 _           Important task
+    #A2 x           Less important task (done)
+    #A2 90%         Less important task (mostly completed)
+    #B2 2005-10-30  Less important task with deadline
+    #B2 x2005-10-25 Less important task (completed)
+
+You can switch category, priority, and date: >
+
+    #1A _           Important task
+    #2A x           Less important task (done)
+
+    #2005-10-30  2A Important task
+    #2005-11-11  1A Most important task
+    #x2005-10-30 3A Less important task (done)
+
+
+                                                    *viki-tables*
+Tables~
+|| Head || Category ||
+|  Row  |  Value     |
+#CAPTION: This Table
+#label
+
+NOTE: Rows can span more than one line by putting a backslash ('\') at the end 
+of the line.
+
+
+                                                    *viki-symbols*
+Symbols~
+<-, ->, <=, =>, <~, ~>, <->, <=>, <~>, !=, ~~, ..., --, ==
+
+
+                                                    *viki-markers*
+Markers~
++++, ###, ???, !!!
+
+
+                                                    *viki-strings*
+Strings~
+"Text in \"quotes\""
+
+NOTE: See also |g:vikiMarkupEndsWithNewline|.
+
+
+                                                    *viki-textstyles*
+Textstyles~
+There are two markup styles which are selected on the basis of 
+|vikiTextStyles|. 2 is the default now.
+
+If |vikiTextStyles| is 2, the markup is like this: >
+
+    __emphasized__, ''typewriter''
+
+If |vikiTextStyles| is 1, the markup is like this: >
+
+    *bold*,       **continuous bold**
+    /italic/,     //continuous italic//
+    _underlined_, __continuous underline__
+    =typewriter=, ==continuous typewriter==
+
+<   NOTE: There must not by a whitespace after the opening mark.
+
+    NOTE: For the word styles, there must be a non-word character (|/\W|) 
+    before the opening mark, i.e. a/b/c will be highlighted as normal text -- 
+    it won't be highlighted. You could use the continuous markup for putting 
+    the "b" in the example in italic.
+
+    NOTE: If |g:vikiTypewriterFont| is defined, this font will be used to 
+    highlight text in typewriter style.
+    
+    NOTE: See also |g:vikiMarkupEndsWithNewline|.
+
+
+                                                    *viki-comments*
+Comments (whole lines)~
+%Comment
+
+
+                                                    *viki-regions*
+Regions~
+#Type [OPTIONS] <<EndOfRegion
+Text ...
+EndOfRegion
+
+For a list of supported regions see the |deplate| documentation.
+
+
+                                                    *viki-sharp-commands*
+One-line commands~
+#COMMAND [OPTIONS]: ARGS
+
+OPTIONS have the form
+    - OPTION! ... set option to true
+    - OPTION=VALUE
+    - the characters "!" and "=" have to be escaped with a backslash
+
+Commands are applied only if the option "fmt" isn't given or if it matches the 
+formatter regexp.
+
+Short list of available COMMANDS "COMMAND" (see also |deplate|):
+    - INC: INCLUDED FILENAME
+    - FIG [here!|top!|bottom!]: FILENAME
+    - CAP [above!|below!]: TEXT
+    - TITLE: TEXT
+    - AUTHOR: TEXT
+    - AUTHORNOTE: TEXT
+    - DATE: [TEXT|now|today]
+    - MAKETITLE [page!]
+    - LIST [page!]: [contents|tables|figures|index]
+    - PAGE
+
+It depends on the formatter if these options have any effect.
+    - DOC ... document options
+    - OPT ... element options (applies to the previous element)
+
+
+                                                   *viki-macros*
+Curly braces~
+Curly braces should be escaped with a backslash (i.e., \{ and \}), as they 
+usually mark macros: >
+
+    {COMMAND [OPTIONS]: ARGS...}
+<
+Short list of available macros (see also |deplate|):
+    - {fn: ID}
+        - inserts a footnote as defined by in a Fn or Footnote region. 
+        - output depends on the formatter
+        - Example: >
+            Foo bar{fn: x} foo bar.
+
+            #Fn: x <<EOF
+                Bla bla.
+            EOF
+<   - {cite: ID}
+        - output depends on the formatter
+    - {date: [format string|now|today]}
+        - the format string uses ruby's strftime method.
+    - {ins: LITERALLY INSERTED TEXT}
+        - Example: {ins fmt=html: &lt;&lt;}
+    - {doc: ID}
+        - access document options, e.g. {opt: author}
+    - {opt: ID}
+        - access element (paragraph, table etc.) options
+    - {ruby [alt=ALTERNATIVE OUTPUT]: RUBY CODE}
+        - if the evaluation of ruby code is disabled, the text given in the 
+          alt option or an empty string will be inserted
+        - a sequence of ruby commands must be separated by semicolons
+
+Common options:
+    - fmt=FORMATTER, nofmt=UNMATCHED FORMATTER
+
+NOTE: Macros cannot cross paragraph borders, i.e., they must not contain empty 
+lines. Using newlines in a macro argument is useless, as the macro text will 
+be collapsed to one single line.
+
+
+                                                    *viki-backslash*
+Backslashes~
+    - A backslash at the end of the line should make a pattern include the 
+      next line.
+    - In general, a backslash should be an escape character that prevents the 
+      vikification of the following character.
+    - A backslash should itself be escaped by a backslash.
+
+\_nounderline_, \NoVikiName
+
+
+================================================================================
+                                                    *viki-key-bindings*
+Default Key Binding~
+
+<c-cr> ... |VikiMaybeFollowLink()|: Usually only works when the cursor is over 
+a wiki syntax group -- if the second argument is 1 it tries to interpret the 
+text under the cursor as a wiki name anyway.
+
+<LocalLeader>ve ... |:VikiEdit| edit a viki page
+
+<LocalLeader><c-r> or <LocalLeader>vs ... Open in a new window
+<LocalLeader>vv ... Open in a new window but split vertically
+    - see also |vikiSplit|
+
+<LocalLeader>v1 - <LocalLeader>v4 ... Open in window 1-4
+
+<LocalLeader>vb ... |VikiGoBack()|
+<LocalLeader>vq ... |:VikiQuote| mark selected text a quoted viki name
+
+<LocalLeader>vd ... |:VikiMarkInexistent| in the whole document
+<LocalLeader>vp ... |:VikiMarkInexistent| in the current paragraph
+
+If |g:vikiMapMouse| is true then these mappings are active, too:
+<m-leftmouse> ... |VikiMaybeFollowLink()|
+<m-leftmouse> ... |VikiGoBack()| (always jumps to the last known entry point)
+
+
+Additional Key Binding In Full Viki Mode
+
+<c-tab>, <LocalLeader>vn   ... |:VikiFindNext|
+<s-c-tab>, <LocalLeader>vN ... |:VikiFindPrev|
+
+
+================================================================================
+                                                    *viki-commands*
+Commands~
+
+                                                    *:VikiMinorMode*
+- VikiMinorMode
+- VikiMinorModeMaybe (don't complain when Viki is already enabled)
+  NOTE: Be aware that we cannot highlight a reference if the text is embedded 
+  in syntax group that doesn't allow inclusion of arbitrary syntax elemtents.
+
+                                                    *:VikiMode*
+- VikiMode (do additional highlighting)
+  Basically the same as: >
+    set ft=viki
+- VikiModeMaybe (don't complain when Viki is already enabled)
+
+                                                    *:VikiFind*
+                                                    *:VikiFindNext* *:VikiFindPrev*
+- VikiFindNext, VikiFindPrev (find the next/previous viki name or URL)
+
+                                                    *:VikiMarkInexistent*
+                                                    *:VikiMarkInexistentInParagraph*
+- VikiMarkInexistent, VikiMarkInexistentInParagraph
+  Update the highlighting of links to inexistent files. VikiMarkInexistent 
+  can take a range as argument.
+
+- VikiQuote                                         *:VikiQuote*
+  Mark selected text as a quoted simple viki name, i.e., enclose it in 
+  [- and -].
+
+- VikiEdit[!] NAME                                     *:VikiEdit*
+  Edit the wiki page called NAME. If the NAME is '*', the |viki-homepage| will 
+  be opened. This is a convenient way to edit any wiki page from vim's command 
+  line. If you call :VikiEdit! (with bang), the homepage will be opened first, 
+  so that the homepage's customizations (and not the current buffer's one) are 
+  in effect. There are a few gotchas:
+
+  1. Viki doesn't define a default directory for wiki pages. Thus a wiki page 
+  will be looked for in the directory of the current buffer -- whatever this 
+  is -- and the customizations of this buffer are in effect. You can 
+  circumvent this problem by using |interviki| names or define a 
+  |viki-homepage| and call :VikiEdit! with a bang.
+
+  2. Viki relies on some buffer local variables to be set. As customizability 
+  is one viki's main design goal (although, one might want to discuss whether 
+  I overdid it), there are no global settings that would define what a valid 
+  viki name is supposed to look like. As a consequence, if you disabled a 
+  certain type of wiki name in the current buffer, you won't be able to edit a 
+  wiki page of this type. E.g.: If the current buffer contains a LaTeX file, 
+  |vikiFamily| is most likely set to "LaTeX" (see |viki-latex|). For the LaTeX 
+  family, e.g., CamelCase and interwiki names are disabled. Consequently, you 
+  can't do, e.g., ":VikiEdit IDEAS::WikiPage". Again, you can circumvent this 
+  problem by defining a |viki-homepage| and call :VikiEdit! with a bang.
+
+- VikiHome                                          *:VikiHome*
+  Open the |viki-homepage|.
+
+- VikiDefine NAME BASE ?SUFFIX                      *:VikiDefine*
+    Define an interviki.
+
+================================================================================
+                                                    *viki-functions*
+Functions~
+
+- VikiMinorMode(state)                              *VikiMinorMode()*
+- VikiMode(state)                                   *VikiMode()*
+    a:state:
+        +/-1 ... Minor mode (negative number ~ don't complain)
+        +/-2 ... Full mode (negative number ~ don't complain)
+
+- VikiMaybeFollowLink(oldmap, ignoreSyntax)         *VikiMaybeFollowLink()*
+    oldmap: If there isn't a viki link under the cursor:
+        ""       ... throw error 
+        1        ... return \<c-cr>
+     	whatever ... return whatever
+    ignoreSyntax: If there isn't a viki syntax group under the cursor:
+        0 ... no viki name found
+        1 ... look if there is a viki name under cursor anyways
+
+- VikiFindAnchor(anchor)                            *VikiFindAnchor()*
+
+- VikiGoBack()                                      *VikiGoBack()*
+  Viki keeps record about the "source" files from where a viki page was 
+  entered.  Calling this function jumps back to the "source" file (if only one 
+  such back reference is known) or let's you select from a list of "source" 
+  files. The information is stored in buffer variables -- i.e., it gets lost 
+  after closing the buffer. Care was taken to reduce information clutter, 
+  which is why the number of possible back references per "source" file was 
+  limited to one.
+
+- VikiOpenSpecialFile(filename)                     *VikiOpenSpecialFile()*
+    Handles filenames that match |vikiSpecialFiles|.
+    If g:vikiOpenFileWith_{SUFFIX} is defined, it contains a command 
+    definition for opending files of this type. "%{FILE}" is replaced with the 
+    file name ("%%" = "%") and the resulting string is executed. Example: >
+
+        let g:vikiOpenFileWith_html = '!firefox %{FILE}'
+
+<   The contents of variable g:vikiOpenFileWith_ANY will be used as fallback
+    command. Under Windows, g:vikiOpenFileWith_ANY defaults to "silent !cmd /c 
+    start".
+    All suffixes are translated to lower case.
+
+- VikiOpenSpecialProtocol(url)                      *VikiOpenSpecialProtocol()*
+    Handles filenames that match |vikiSpecialProtocols|.
+    If g:vikiOpenUrlWith_{PROTOCOL} is defined, it contains a command definition 
+    for opending urls of this type. "%{URL}" is replaced with the url ("%%" = 
+    "%") and the resulting string is executed. Example: >
+
+        let g:vikiOpenUrlWith_mailto = '!thunderbird -compose %{URL}'
+
+<   The contents of variable g:vikiOpenUrlWith_ANY will be used as fallback
+    command. Under Windows, g:vikiOpenUrlWith_ANY defaults to "silent 
+    !rundll32 url.dll ...".
+    All protocol names are translated to lower case.
+
+- VikiDefineMarkup(mode)                            *VikiDefineMarkup()*
+
+- VikiDefineHighlighting(mode)                      *VikiDefineHighlighting()*
+
+
+================================================================================
+                                                    *viki-variables*
+Variables~
+
+Homepage:                                           *viki-homepage*
+                                                    *g:vikiHomePage*
+- g:vikiHomePage:
+    An absolute filename that is the general viki homepage (see also 
+    |:VikiEdit| and |:VikiHome|).
+
+Simple Viki Names [2]:                              *viki-vars-simple-names*
+                                                    *g:vikiLowerCharacters* 
+                                                    *g:vikiUpperCharacters*
+- g:vikiLowerCharacters, g:vikiUpperCharacters, b:vikiLowerCharacters, 
+  b:vikiUpperCharacters
+    These default to "a-z" and "A-Z" respectively; "international" users 
+    should set these variables in their |vimrc| file to fit their needs
+
+- b:vikiAnchorMarker
+
+- b:vikiSimpleNameRx, b:vikiSimpleNameSimpleRx[1]
+- b:vikiSimpleNameNameIdx, b:vikiSimpleNameDestIdx, b:vikiSimpleNameAnchorIdx
+
+Extended Viki Names [2]:                            *viki-vars-ext-names*
+- b:vikiExtendedNameRx, b:vikiExtendedNameSimpleRx[1]
+- b:vikiExtendedNameNameIdx, b:vikiExtendedNameDestIdx, 
+  b:vikiExtendedNameAnchorIdx
+
+URLs [2]:                                           *viki-vars-urls*
+- b:vikiUrlRx, b:vikiUrlSimpleRx[1]
+- b:vikiUrlNameIdx, b:vikiUrlDestIdx, b:vikiUrlAnchorIdx
+
+NOTE: [1] The same as *Rx variables but with less groups.
+NOTE: [2] These variables are defined by |VikiSetupBuffer()|.
+
+- b:vikiAnchorRx                                    *b:vikiAnchorRx*
+    If this variable exists, the string "%{ANCHOR}" will be replaced with the 
+    search text. The expression has to conform to the very nomagic |/\V| 
+    syntax.
+
+- g:vikiFreeMarker                                  *g:vikiFreeMarker*
+    If true and an explicitly marked anchor isn't found, search for the anchor 
+    text as such. This search will be case-insensitive. deplate won't be able 
+    to deal with such pseudo-references, of course.
+
+
+File handling:
+
+- g:vikiSpecialFiles, b:vikiSpecialFiles            *vikiSpecialFiles*
+    Default value: jpg\|gif\|bmp\|pdf\|dvi\|ps
+    A list of extensions for files that should be opened with 
+    |VikiOpenSpecialFile()|.
+
+- g:vikiSpecialProtocols, b:vikiSpecialProtocols    *vikiSpecialProtocols*
+    Default value: https\?\|ftps\?
+    A list of protocolls that should be opened with 
+    |VikiOpenSpecialProtocol()|.
+
+- g:vikiUseParentSuffix                             *g:vikiUseParentSuffix*
+    Default value: 0
+    If true, always append the "parent" file's suffix to the destination file 
+    name. I.e. if the current file is "ThisIdea.txt" the the viki name 
+    "OtherIdea" will refer to the file "OtherIdea.txt".
+
+- g:vikiNameSuffix b:vikiNameSuffix                 *vikiNameSuffix* *b:vikiNameSuffix*
+    Default value: ""
+    Append suffix to the destination file name.
+
+
+Markup:
+
+- g:vikiTextStyles, b:vikiTextStyles                *vikiTextStyles*
+    Default: 2
+    Defines the markup of |viki-textstyles| like emphasized or code.
+
+- g:vikiCommentStart                                *g:vikiCommentStart*
+    Default value: %
+    Defines the prefix of comments when in "full" viki mode.
+
+- b:vikiCommentStart                                *b:vikiCommentStart*
+    In minor mode this variable is set to either:
+        - b:commentStart
+        - b:ECcommentOpen
+        - matchstr(&commentstring, "^\\zs.*\\ze%s")
+    In "full" viki mode it's set to |g:vikiCommentStart|.
+
+- g:vikiTypewriterFont                              *g:vikiTypewriterFont*
+    See |viki-textstyles|.
+
+- g:vikiHeadingFont                                 *g:vikiHeadingFont*
+    See |viki-headings|.
+
+- g:vikiHyperLinkColor                              *g:vikiHyperLinkColor*
+    Default: DarkBlue or LightBlue (depending on 'background')
+    The color of hyperlinks, viki names etc.
+
+- g:vikiInexistentColor                             *g:vikiInexistentColor*
+    Default: Red
+    The color of links to inexistent files.
+
+- g:vikiFamily, b:vikiFamily                        *vikiFamily*
+    By defining this variable, family specific functions will be called for:
+        - VikiSetupBuffer{b:vikiFamily}(state)
+        - VikiDefineMarkup{b:vikiFamily}(state)
+        - VikiDefineHighlighting{b:vikiFamily}(state)
+        - VikiCompleteSimpleNameDef{b:vikiFamily}(def)
+        - VikiCompleteExtendedNameDef{b:vikiFamily}(def)
+        - VikiFindAnchor{b:vikiFamily}(anchor)
+    If one of these functions is undefined for a "viki family", then the
+    default one is called.
+
+    Apart from the default behaviour the following families are defined:
+        - LaTeX (see |viki-latex|)
+        - AnyWord (see |viki-any-word|)
+
+
+Etc:
+
+- g:vikiMapMouse                                    *g:vikiMapMouse*
+    See |viki-key-bindings|.
+
+- b:vikiSplit, g:vikiSplit                          *vikiSplit*
+    -1 ... open all links in a new windows
+    -2 ... open all links in a new windows but split vertically
+    Any positive number ... open always in this window
+
+- b:vikiNameTypes, g:vikiNameTypes                  *vikiNameTypes*
+    Default value: "csSeui"
+        s ... Simple viki name 
+            c ... CamelCase 
+            S ... simple, quoted viki name
+            i ... |interviki|
+        e ... Extended viki name
+        u ... URL
+    Disable certain types of viki names globally or for a single buffer.
+    (experimental, doesn't fully work yet)
+
+- g:vikiSaveHistory                                 *g:vikiSaveHistory*
+    Default value: 0
+    If genutils.vim is installed, the history data will be saved in 
+    |viminfo-file|. Like most of this plugin, this feature is _experimental_
+    and is turned off by default.
+
+- g:vikiExplorer                                    *g:vikiExplorer*
+    Default: "Sexplore"
+    If a viki name points to a directory, we use this command for viewing the 
+    directory contents.
+
+- g:vikiMarkInexistent                              *g:vikiMarkInexistent*
+    Default: 1
+    If non-zero, highligh links to existent or inexistent files in different 
+    colours.
+
+- b:vikiInverseFold                                 *b:vikiInverseFold*
+    Default: 0 == OFF
+    If set, the section headings' levels are folded in reversed order so that 
+    |b:vikiMaxFoldLevel| corresponds to the top level and 1 to the lowest 
+    level. This is useful when maintaining a file with a fixed structure where 
+    the important things happen in subsections while the top sections change 
+    little.
+
+- b:vikiMaxFoldLevel                                *b:vikiMaxFoldLevel*
+    Default: 5
+    When using |b:vikiInverseFold|, a heading of level b:vikiMaxFoldLevel 
+    corresponds to level 1, b:vikiMaxFoldLevel - 1 to level 2, 
+    b:vikiMaxFoldLevel - 2 to level 3 ...  and a top heading to level 
+    b:vikiMaxFoldLevel. I.e., if you set |foldlevel| to 1, you will see only 
+    the text at level b:vikiMaxFoldLevel.
+
+- g:vikiFolds                                       *g:vikiFolds*
+    Default: hl
+    Define which elements should be folded:
+        h :: Heading
+        H :: Headings (but inverse folding)
+        l :: Lists
+
+- b:vikiNoSimpleNames                               *b:vikiNoSimpleNames*
+    Default: 0
+    If non-nil, simple viki names are disabled.
+
+- b:vikiDisableType                                 *b:vikiDisableType*
+    Disable certain viki name types (see |vikiNameTypes|).
+    E.g., in order to disable CamelCase names only, set this variable to 'c'.
+
+- g:vikiHide                                        *g:vikiHide*
+    Default: ''
+    If a dirty buffers gets hidden, vim usually complains. This can be 
+    tiresome -- depending on your editing habits. When this variable is set to 
+    "hide", vim won't complain. If you set it to "update", a viki buffer will 
+    be automatically updated before editing a different file.  If you leave 
+    this empty (""), the default behaviour is in effect. See also |hidden|.
+
+
+================================================================================
+                                                    *viki-highlight*
+Highlighting~
+
+Viki.vim defines several new highlight groups. Precaution is taken to select 
+different colours depending on the background, but colour schemes are ignored. 
+The colors are tested using color scheme with a white background.
+
+    - vikiHyperLink
+    - vikiHeading
+    - vikiList
+    - vikiTableHead
+    - vikiTableRow
+    - vikiSymbols
+    - vikiMarkers
+    - vikiAnchor
+    - vikiString
+    - vikiBold
+    - vikiItalic
+    - vikiUnderline
+    - vikiTypewriter
+    - vikiCommand
+
+
+================================================================================
+                                                    *viki-compile*
+Viki Compile~
+
+The compile plugin simply defines |deplate| as the current file's |makeprg|. 
+It also provides basic support for |deplate|'s error messages.
+
+The compiler plugin provides a command for setting compiler options:
+
+    - DeplateSetCompiler [FLAGS]
+
+E.g. when using the lvimrc plugin, you could put something like this into the 
+current directorie's .lvimrc-file for putting the output into a dedicated 
+directory: >
+
+    DeplateSetCompiler -d ../html
+
+
+================================================================================
+                                                    *viki-latex* *vikiLatex*
+Viki LaTeX~
+
+The archiv includes an experimental add-on for using LaTeX commands as simple 
+wiki names. Among the commands that are to some degree used as hyperlinks or 
+anchors:
+
+    - \viki[anchor]{name}
+ 	- \input
+ 	- \include
+ 	- \usepackage
+ 	- \psfig
+ 	- \includegraphics
+    - \bibliography
+    - \label (as anchors)
+    - \ref (in the current file only)
+
+Limitations: There must not be spaces between between the leading backslash, 
+the command name, and its arguments. A command must not span several lines.
+
+Simple viki names (including |interviki|, CamelCase, and quoted viki names) 
+are disabled -- as they wouldn't be of much use in a LaTeX document anyway. 
+(Well, as a matter of fact they aren't disabled but LaTeX commands are defined 
+as simple viki names.)
+
+This plugin also highlights a hypothetical \viki[anchor]{name} command, which
+could be defined as: \newcommand{\viki}[2][]{#2}
+
+If b:vikiFamily is set to "LaTeX", then calling |:VikiMinorMode| will use 
+these commands instead of normal viki names. This change can be made permanent 
+by adding this line to your |vimrc| file: >
+
+    au FileType tex let b:vikiFamily="LaTeX"
+<
+                                                    *:VikiMinorModeLaTeX*
+LaTeX support is switched on with the command :VikiMinorModeLaTeX. This 
+command sets b:vikiFamily to "LaTeX" and calls |:VikiMinorMode|. This
+command relies on the external kpsewhich tool, which has to be installed on
+your computer.
+
+                                                    *vikiLatex-UserCommands*
+You can extend the list of supported commands by listing your commands in
+g:vikiLaTeXUserCommands and by defining a corresponding function called 
+VikiLaTeX_{YourCommand}(args, opts). VikiLaTeX assumes that a command looks 
+like this: \latexcommand[opts]{args}. This function should return a string 
+that defines the variable dest (=destination file) as well as, optionally, 
+anchor and name -- see |:return| for an explanation of how this works. A 
+simple minded example: >
+
+    let g:vikiLaTeXUserCommands = 'other\|self'
+
+    fun! VikiLaTeX_other(args, opts)
+        return 'let dest="'.a:args.'.tex" | let anchor="'.a:opts.'"'
+    endfun
+
+    fun! VikiLaTeX_self(args, opts)
+        return 'let dest="'.g:vikiSelfRef.'" | let anchor="'.a:opts.'"'
+    endfun
+
+
+================================================================================
+                                                    *viki-any-word*
+Viki Any Word~
+
+If b:vikiFamily or g:vikiFamily is set to "AnyWord", then any word becomes a 
+potential viki link.
+
+This feature conflicts with the highlighting of links to inexistent files. 
+Links to inexistent files are displayed as normal text.
+
+
+================================================================================
+                                                    *viki-bibtex*
+Viki BibTeX~
+
+The bibtex ftplugin defines record labels as anchors. Thus, if make an 
+|interviki| definition point to your bib files you can refer to bib entries as 
+viki names. Example: >
+
+    let g:vikiInterBIB         = $HOME ."/local/share/texmf/bibtex/bib/tml"
+    let g:vikiInterBIB_suffix  = ".bib"
+
+    Then, activating the following viki name
+    BIB::[-monos-]#rec02
+    would open the file monos.bib and search for the record rec02.
+
+
+================================================================================
+                                                    *viki-tags*
+Ctags~
+
+For ctags support (e.g. in conjunction with taglist) add this to your .ctags 
+file (this assumes that *.txt files are in viki mode; you have to adjust the 
+file suffix if you choose a different suffix): >
+
+    --langdef=deplate
+    --langmap=deplate:.txt
+    --regex-deplate=/^(\*+ .+)/\1/s,structure/
+    --regex-deplate=/^(#[a-z][a-z0-9]+)/\1/s,structure/
+    --regex-deplate=/\[\[[^\]]+\]\[([^\]]+)\]\]/\1/r,reference/
+    --regex-deplate=/\[\[([^\]]+)\]\]/\1/r,reference/
+    --regex-deplate=/([A-Z][a-z]+([A-Z][a-z]+)+)/\1/r,reference/
+    --regex-deplate=/([a-z]+:\/\/[A-Za-z0-9.:%?=&_~@\/|-]+)/\1/u,url/
+
+For use with taglist, the variable "tlist_viki_settings" is already set for 
+you.
+
+
+================================================================================
+                                                    *deplate*
+Deplate~
+
+deplate is a ruby script/library that converts viki markup to:
+
+    - html
+    - htmlslides
+    - latex
+    - docbook
+
+Download the latest version from http://sourceforge.net/projects/deplate/.
+
+deplate's markup is not 100% identical with the standard viki mode's one.  
+E.g., it doesn't support underline, italic markup. deplate sometimes failes 
+with cryptic error messages and it doesn't always give the results one would 
+expect. On the other hand, it features inclusion of LaTeX snippets, footnotes, 
+references, an autogenerated index etc.
+
+
+--
+(the following is adapted from latex-suite.txt)
+vim:fdm=expr:tw=78
+vim:foldexpr=getline(v\:lnum-2)=~"=\\\\{80,}"?"a1"\:(getline(v\:lnum+1)=~"=\\\\{80,}"?"s1"\:"=")
+vim:foldtext=v\:folddashes.substitute(getline(v\:foldstart),"\\\\s*\\\\*.*","","")

@@ -1,0 +1,560 @@
+*gdb.txt*    For Vim version 7.1.     Last change: 2007 July 20
+
+
+			     VIM REFERENCE MANUAL
+
+The GDB interface user guide		*gdb* *vimgdb*
+This document explains how to use Vim's GDB interface
+
+1. Introduction				|gdb-introduction|
+2. Starting VimGDB			|gdb-starting|
+3. GDB commands				|gdb-commands|
+4. Gdb window				|gdb-window|
+5. The variables window			|gdb-variables|
+6. Mappings				|gdb-mappings|
+7. Options				|gdb-options|
+8. Gdb assembly				|gdb-assembly|
+9. Limitations				|gdb-limitations|
+
+
+{Vi does not have any of these commands}
+
+VimGDB has been tested with GNU GDB 5.3, 6.0, 6.1.1, 6.2.1, 6.3 and 6.4.
+
+The GDB interface only works when Vim is compiled with the |+gdb| feature.
+
+==============================================================================
+1. Introduction				*gdb-introduction*
+
+Vim's gdb interface provides the following features:
+
+* Input is done using the input-line window with syntax highlighting so that
+  you can check GDB syntax while typing commands. Any GDB command can be
+  mapped to a key sequence using Vim key mappings. This allows, for example,
+  to set/clear a breakpoint or print a variable's value at the current cursor
+  position by just hitting a key.
+
+* GDB output goes to a Vim buffer displayed in the gdb window. This includes
+  output done by the program you are debugging. The gdb window status line
+  shows the target status.
+
+* You can send an interrupt to GDB and the program it is running.
+
+* A pool of assembly buffers holds the assembly code for the most recently
+  used functions wether there is source code information for these functions
+  or not. This feature can be disabled or interrupted.
+
+* Breakpoints are highlighted in source code and in the assembly buffers. The
+  highlighting includes the last two digits of the breakpoint number so that
+  they can be easily identified. Disabled breakpoints are noted with a
+  different highlighting color. VimGDB automatically finds the source file for
+  the breakpoint if it exists, and displays and highlights the line. When
+  there is no debugging information or source files, VimGDB disassembles the
+  function containing the breakpoint and displays and highlights its line.
+
+* Each time GDB displays a stack frame, VimGDB automatically finds the source
+  file for that frame, displays and highlights the line. When there is no
+  source code for the frame or when doing instruction stepping (stepi, nexti)
+  the program counter line within an assembly window is highlighted.
+
+* Depending on the GDB version you are using, VimGDB may run in two different
+  modes: level 2 when using the deprecated GDB annotations level 2 and
+  level 3 when using GDB/MI and the new annotations level 3. See |gdb-modes|.
+  Mode selection is automatically done by VimGDB.
+
+* Any variable (any expression in level 2 mode) can be "dropped" in the gdb
+  variables window by selecting it and hitting <CTR-P>. The variable's value
+  is updated and highlighted whenever changed. To remove a variable, just
+  delete it from the gdb variables window with a Vim command. See
+  |gdb-variables|.
+
+* GDB command and file name completion. This also works while entering a GDB
+  user-defined sequence of commands or a list of commands for a breakpoint.
+
+* The current GDB session can be abandonned with the "quit" GDB command and
+  another GDB session started later, within the same Vim session, using
+  possibly a different GDB program.
+
+
+==============================================================================
+2. Starting VimGDB			*gdb-starting*
+
+Before starting VimGDB, here are some optional Vim commands that you may want to
+run or include in your .vimrc: >
+
+    :syntax enable			" enable syntax highlighting
+    :set previewheight=12		" set gdb window initial height
+    :run macros/gdb_mappings.vim	" source key mappings listed in this
+					" document
+    :set asm=0				" don't show any assembly stuff
+    :set gdbprg=gdb_invocation		" set GDB invocation string (default 'gdb')
+
+Start VimGDB. There are two ways to do that:
+
+1) Open the input-line window: >
+
+    :call gdb("")
+<
+    and then start an instance of GDB by pressing <CR> inside the input-line
+    window, or enter any GDB command in this window.
+
+To open the input-line window, one can also also hit <Space> in Vim normal mode
+when 'gdb_mappings.vim' has been sourced.
+
+2) Start VimGDB directly without using the input-line window by using a
+<Space> as argument to the function gdb(): >
+
+    :call gdb(" ")
+<
+    or start GDB and execute straightaway a GDB command: >
+
+    :call gdb("file foobar")
+<
+To stop GDB, type the GDB "quit" command in the input-line window. To start
+another instance later, use the same procedure as described above, possibly
+with another GDB program by setting Vim option 'gdbprg' to a different string.
+
+The gdb program that is forked by VIM can have command line arguments, and
+these arguments may be double quoted. These, as well as the name of the
+program to run (must be in the PATH or start with a '/'), are set in the
+gdb_invocation string of the Vim gdbprg variable. For example: >
+
+    :set gdbprg=gdb\ --args\ foobar\ \"this\ is\ foobar\ argument\"
+
+
+When $cdir (for compilation directory) is present in the 'directory' GDB
+variable, vimgdb automatically locates the source file with the help of GDB, by
+using the debugging information stored in the file that is being debugged.
+This is very useful when the program to debug is the result of multiple
+compilation units located in different directories.
+
+
+					*gdb-modes*
+VimGDB modes:
+------------
+VimGDB may run in two different modes called level 2 and level 3. Level 2 uses
+GDB annotations level 2. Level 3 uses GDB/MI and annotations level 3. When
+starting, VimGDB automatically selects the appropriate mode.
+
+There are two reasons why you should be aware of the mode you are using. The
+first is that the behaviour of |gdb-variables| is different, depending on the
+mode. The second reason is that you may want to tell the mode that was being
+used when sending VimGDB bug reports.
+
+The mode VimGDB is currently using is shown on the first line displayed in the
+gdb window after GDB starts. Another way to know which mode you are on, is to
+run the GDB command "show annotate". The resulting "Annotation_level" has the
+same value as VimGDB mode level.
+
+The chosen mode depends on the GDB version you are running (technical: level 3
+mode is chosen when the GDB command "interpreter-exec" that gives access to
+GDB/MI is supported by GDB). GDB 5.3 runs with level 2 mode. GDB 6.0 and above,
+and GDB 2003-03-03-cvs on Cygwin all run with level 3 mode.
+
+
+==============================================================================
+3. GDB commands 			*gdb-commands*
+
+To enter a GDB command using the Vim command line, call the Vim gdb()
+function. For example, when you want to set a breakpoint in Vim at
+gdb_parse_output_cli() type: >
+
+    :call gdb("rbreak gdb_parse_out*")
+
+It might be easier to use the gdb input-line window and enter the GDB command
+directly within this window. The gdb input-line window can be opened by typing: >
+
+    :call gdb("")
+
+or by hitting <Space> in Vim normal mode when 'gdb_mappings.vim' has been
+sourced.
+
+The following keys have a special function within the gdb input-line window:
+
+	CTRL-Z	    send an interrupt to GDB
+
+	<Tab>	    ask GDB for a completion
+
+	<CR>	    send the line where the cursor is positionned as
+		    a command to GDB. On an empty line, cause a new GDB
+		    instance to be started if one is not already running
+
+	CTRL-C CTRL-C standard Vim method for aborting a input-line window.
+		    It also sends an interrupt to GDB
+
+Of course using key mappings is even easier than the gdb input-line window.
+See |gdb-mappings| for available mappings after sourcing 'gdb_mappings.vim'.
+
+Note: As long as the current GDB command has not completed, VimGDB discards
+further commands except interrupts and displays a message on the command line
+warning that the command has been discarded.
+
+
+==============================================================================
+4. Gdb window 				*gdb-window*
+
+You can hide the gdb window at any time with the Vim |:quit| command. The
+gdb window pops up when:
+
+    GDB outputs a frame (in other words: the debuggee stopped)
+
+    the gdb() function is called
+
+The gdb window initial height is set according to the 'previewheight' option
+value.
+
+The position of the gdb window on the screen at the left-right-top-bottom is setup
+according to the values of the Vim options 'splitbelow' and 'splitright',
+according to the following table:
+
+			splitright          nosplitright
+
+	splitbelow	    below		left
+
+	nosplitbelow	    right	      top (the default)
+
+
+In Normal mode, the gdb window is updated whenever GDB outputs some data. In
+all the other Vim modes, VimGDB stops reading GDB's output.
+
+All successive GDB sessions within the same Vim session share an unique buffer
+displayed in the gdb window.
+
+The gdb window status line displays the name of the symbol file and the target
+status. When the debuggee is stopped, the target status is replaced by the
+disassembled instruction of the program counter.
+
+
+==============================================================================
+5. The variables window			*gdb-variables*
+
+The variables window and its related commands behave differently depending on
+the mode being used. See |gdb-modes| for information on VimGDB modes. It is
+worth upgrading to GDB 6.0 or later in order to run VimGDB with level 3, as
+this level provides much better correctness in the display of variable values
+(see below, sub-section "The level 3 mode").
+
+The first part in this chapter discusses what is common to both modes.
+
+The Vim option 'gdbvariables' (short name 'gdbvar', default value
+"gdb-variables") defines the name of the buffer containing the GDB variables
+that are displayed in the gdb variables window. This buffer is not related to
+a file and belongs to the |special-buffers| category (buftype=nofile). When
+this option is empty, the gdb variables window feature is disabled entirely.
+
+					*gdb-cr* *gdb-createvar*
+The "createvar" command is used with the variables window to drop any valid
+GDB variable (GDB expression in level 2) in the gdb variables window. Valid
+means the variable must be valid in the current frame. For example, to drop
+the variable "*curwin" in the gdb variables window: >
+
+    :call gdb("createvar *curwin")
+
+It is even easier to select in Visual mode in some source code the variable
+you want to drop, and just hit CTRL-P ('gdb_mappings.vim' must have been
+sourced).
+
+The "createvar" command can be entered as any GDB command but is not a GDB
+command. In level 2 this command is mapped to the GDB "display" command so
+that typing "createvar" and "display" are equivalent. In level 3 the
+"createvar" command is intercepted by VimGDB and internally mapped to GDB/MI
+commands.
+
+The "createvar" command syntax is:
+
+    createvar/FMT variable
+
+where /FMT is optionnal and FMT may be one of:
+    `t'
+	Print as integer in binary. The letter `t' stands for "two"
+    `d'
+	Print as integer in signed decimal
+    `x'
+	Regard the bits of the value as an integer, and print in hexadecimal
+    `o'
+	Print as integer in octal
+
+When dropping a variable into the gdb variables window, this window is popped
+up if not already displayed: VimGDB picks up the first available window that
+is not the gdb window and replaces its contents with the gdb variables window
+buffer. It might be convenient sometimes to |:split| your windows before doing
+the dropping.
+
+In both modes, deleting a line in the variables window removes all the
+corresponding references to the tracked variable in GDB and VimGDB.
+
+Changed values are highlighted with the "Special" highlighting. With level 3,
+when a variable goes out of scope, its value is highlighted with the "Comment"
+highlighting.
+
+The highlighting is done with the support of the gdbvar.vim syntax file. If
+this file is missing or cannot be accessed by Vim, the equal sign that
+separates variable from value in the gdb variables window are tagged with
+(these signs are hidden when syntax is available): >
+
+    ={=} for unchanged values
+    ={*} for changed values
+    ={-} for out of scope variables
+
+The gdb variables window buffer is 'modifiable', which means you can move
+around lines, insert empty lines and even add your own comments as long as
+none of your lines starts with a number followed by a colon (more precisely:
+does not match the regular expression "^\s*\d\+:")
+
+
+The level 2 mode:
+----------------
+This sub-section describes what is specific to level 2.
+
+The gdb variables window uses the GDB "automatic display" feature. In level 2
+the "createvar" command is mapped to the GDB "display" command so that typing
+"createvar" and "display" are equivalent.
+
+Level 2 is not restricted to dropping only variables, expressions can be
+dropped as well in the variables window.
+
+The expression value is updated whenever the debuggee stops or the GDB
+"display" or VimGDB "createvar" command is run without argument. Note that the
+expression must be valid in the current context in order to be evaluated by
+GDB "automatic display" feature. This is one of the important differences with
+level 3. To make it easier to track data, each value is highlighted whenever
+changed.
+
+To "undisplay" an expression, just delete it from the gdb variables window.
+VimGDB will invoke GDB "undisplay" command transparently to remove this item
+from GDB "automatic display list" next time the debuggee stops or the GDB
+"display" or VimGDB "createvar" command is run without argument.
+
+Conversely, if you invoke the GDB "undisplay" command corresponding to a
+displayed line, VimGDB will delete this line from the gdb variables window
+next time the debuggee stops or the GDB "display" or VimGDB "createvar"
+command is run without argument.
+
+When The Vim option 'gdbvariables' is empty or the variables buffer has been
+wiped out, the gdb variables window feature is disabled entirely for the
+current GDB session and the GDB "display" commands output goes unprocessed to
+the gdb window.
+
+
+The level 3 mode:
+----------------
+This sub-section describes what is specific to level 3.
+
+Level 3 deals only with variables, not expressions. However this mode provides
+with the variables window a much more powerful tool than is provided by
+level 2.
+
+First, variables are updated any time you enter any GDB command. If you are
+tracking variable "int foo" with a current value of 100, and run the GDB
+command "print foo = 333", then its value will be highlighted in the variables
+window and the new value displayed.
+
+The variables that are out of scope are highlighted with the "Comment"
+highlighting.
+
+Variables that are in scope are updated and highlighted whenever changed.
+Here is an example involving the scope concept: >
+
+
+    typedef struct
+    {
+	int sample;
+    } store_T;
+
+    void foo(char *str, int *pnum, store_T *pt)
+    {
+	if (str != (char *)0 && *str != '\0')
+	    *str = 'X';
+	if (pnum != (int *)0)
+	    *pnum += 1;
+	if (pt != (store_T *)0)
+	    pt->sample++;
+    }
+
+    void foobar(char *ptr)
+    {
+	store_T mainstore;
+	int period = 200;
+
+	/* Step 2 - "createvar" a variable for mainstore and for period */
+	mainstore.sample = 100;
+	foo(ptr, &period, &mainstore);
+    }
+
+    int main(int argc, char * argv[])
+    {
+	if (argc >= 1)
+	    /* 
+	     * Step 1 - Set a breakpoint here and "createvar" a variable
+	     * for argv[0] after having split one window. From there,
+	     * proceed by stepping line by line through the code */
+	    foobar(argv[0]);
+	return 0;
+    }
+
+Run VimGDB on this module and add variables to the variables window as
+described in the module's comments step 1 and step 2. The variables argv[0],
+period and mainstore are all in scope within functions foobar() and foo().
+Their new values are displayed and highlighted as changed when changed in
+foo() except mainstore that displays a value of {...} with the same
+highlighting telling it has changed.
+
+Trying to run the GDB "print" command on "period" while stopped in foo()
+causes an error with the message 'No symbol "period" in current context'.
+While in the same time, the variables window with GDB/MI is able to detect
+changes in "period"'s value and to evaluate "period"'s value when stopped in
+foo().
+
+However, complex data such as structures cannot currently be evaluated by
+VimGDB when not defined in the current context. Instead the following symbol
+{...} is displayed and highlighted to tell you its value has changed. In this
+case, to get the variable's value, go in the stack frame where this variable
+is defined using the "up", "down" or "frame" GDB command and "print" it.
+
+When exiting foobar(), period and mainstore become out of scope and are
+highlighted with the "Comment" highlighting.
+
+Note: The "createvar" command requires an argument in level 3. The "automatic
+display list" and the variables are two independent features in level 3.
+
+
+==============================================================================
+6. Mappings 				*gdb-mappings*
+
+The gdb() function accepts a string as single argument which is sent to GDB as
+a GDB command. This can be used to map any command to a key sequence. Examples
+of such mappings are given in 'macros/gdb_mappings.vim'. To use those
+mappings, source the script: >
+
+    :run macros/gdb_mappings.vim
+
+The key <F7> is used to toggle between the 'gdb_mappings.vim' mappings and the
+default Vim mappings.
+
+List of key mappings in 'gdb_mappings.vim':
+
+	<Space> launch the interactive gdb input-line window
+	CTRL-Z  send an interrupt to GDB and the program it is running
+	B	info breakpoints
+	L	info locals
+	A	info args
+	S	step
+	I	stepi
+	CTRL-N	next: next source line, skipping all function calls
+	X	nexti
+	F	finish
+	R	run
+	Q	quit
+	C	continue
+	W	where
+	CTRL-U	up: go up one frame
+	CTRL-D	down: go down one frame
+	CTRL-B	set a breakpoint on the line where the cursor is located
+	CTRL-E	clear all breakpoints on the line where the cursor is located
+	CTRL-P	Normal mode: print value of word under cursor
+		Visual mode: GDB command "createvar" selected expression, see
+		|gdb-variables|
+	CTRL-X	print value of data referenced by word under cursor
+
+CTRL-B and CTRL-E operate both on source code and on disassembled code in
+assembly buffers.
+
+
+==============================================================================
+7. Options				*gdb-options*
+
+						*'asm'*
+'asm'                   number	(default 10)
+			global
+			{not in Vi}
+			{not available when compiled without the |+gdb|
+			feature}
+	Number of assembly buffers that are created at each VimGDB session,
+        see |gdb-assembly|. The maximum hard limit to this option is 64.
+        When the value of this option is 0 before starting VimGDB, the
+        assembly feature is disabled. When it is set to 0 within a VimGDB
+        session, the assembly feature is temporarily disabled.
+
+						*'gdbprg'* *'gdp'*
+'gdbprg' 'gdp'	        string (default "gdb")
+			global
+			{not in Vi}
+			{not available when compiled without the |+gdb|
+			feature}
+	The invocation string of the GDB program that is exec'd by VimGDB when
+        starting. The first token is the GDB program (in the PATH or must
+	start with '/') followed by command line options, possibly double
+	quoted.
+
+						*'gdbvariables'* *'gdbvar'*
+'gdbvariables' 'gdbvar'	string	(default "gdb-variables")
+			global
+			{not in Vi}
+			{not available when compiled without the |+gdb|
+			feature}
+	Name of the variables window, see |gdb-variables|.
+        When this option is empty, the variables window feature is disabled.
+
+
+==============================================================================
+8. Gdb assembly 			*gdb-assembly*
+
+If you do not care for assembly display, skip this section and add this line
+to your .vimrc: >
+
+    :set asm=0
+
+The Vim 'asm' option defines the size of the pool of assembly buffers. This
+pool is used as a cache and holds the disassembled code of the most recently
+used functions. These buffers are 'notlisted', use |:ls!| to list them.
+Assembly buffers are cleared when you run the following GDB commands: file,
+exec-file or core-file.
+
+The size of the pool of assembly buffers is defined by the value of the 'asm'
+option at the start of each new GDB session (default 10, max hard limit 64).
+When 'asm' is zero at the start of a new GDB session, assembly buffers are not
+used at all for the whole session. When 'asm' is set to zero in the middle of
+a GDB session, assembly buffers are temporarily not used until you set back
+'asm' to a non-zero value.
+
+The assembly buffers are used:
+
+a - when setting a breakpoint and there is no debugging information or source
+    file, VimGDB disassembles the function containing the breakpoint and
+    displays and highlights its line in an assembly buffer
+
+b - when the debuggee stops in a portion of code where there is no source
+    code, or when doing instruction stepping (stepi, nexti), an assembly
+    buffer is displayed and the program counter line highlighted
+
+c - when doing source code stepping (not stepi or nexti) within some source
+    code and the corresponding assembly buffer is displayed simultaneously in
+    another window, the assembly window scrolls to make the program counter
+    line visible in the assembly code
+
+When filling large assembly buffers, VimGDB displays a busy message. You can
+interrupt the command at any time with a GDB interrupt CTRL-Z, except on
+Cygwin.
+
+Note: When the source is missing and the corresponding object is compiled with
+'-g', GDB skips some frame annotations and therefore some $pc highlighting do
+not occur. In this case, strip the debuggee with '--strip-debug' (or '-g':
+remove debugging symbols only) to restore the normal behavior.
+
+
+==============================================================================
+9. Limitations				*gdb-limitations*
+
+You cannot include |+gdb| in a Vim version compiled with "small" or "tiny"
+features, "normal" features is the minimum requirement.
+
+You cannot set any command line argument to GDB. However, all of them can be
+set from within GDB with the GDB "set" command, once it is started.
+
+To enable syntax highlighting in the gdb window, the prompt must be surrounded
+by parenthesis.
+
+VimGDB stops reading GDB output in all modes but normal mode, and in normal
+mode when entering |zN<CR>| and |CTRL-\|.
+
+ vim:tw=78:ts=8:ft=help:norl:

@@ -1,0 +1,90 @@
+# ================================
+# Snippets for Docbook Type      #
+# ================================
+
+# Para
+snippet <pa
+	<para>
+	  ${1}
+	</para>${2}
+# Emphasis
+snippet <em
+	<emphasis>${1:italic}</emphasis>${2}
+# Emphasis
+snippet <eb
+	<emphasis role='bold'>${1:bold}</emphasis>${2}
+# Link
+snippet <li
+	<link xlink:href='${1:http}'>${2:name}</link>${3}
+# Link new
+snippet <ln
+	<link xlink:href='${1:http}' xlink:show='new'>${2:name}</link>${3}
+# Link to easwy.com
+snippet <le
+	<link xlink:href='http://easwy.com/' xlink:show='new'>Easwy</link>${1}
+# Program listing
+snippet <pro
+	<programlisting>
+	  ${1}
+	</programlisting>${2}
+# Article skeleton
+snippet <article
+	<?xml version='1.0' encoding='utf-8'?>
+	
+	<!DOCTYPE article [
+	<!ENTITY fixme 'http://easwy.com/blog/'>
+	<!ENTITY myblog 'http://easwy.com/blog/'>
+	]>
+	
+	<article xmlns='http://docbook.org/ns/docbook' xml:lang='zh-CN'
+	  xmlns:xlink='http://www.w3.org/1999/xlink'>
+	  <title>${1:title}</title>
+	  <para>
+	    ${2} 
+	  </para>
+	  ${3}
+	  <para>
+	    更多内容，请阅读<link xlink:href='&myblog;'>易水博客</link>上的其它文章。
+	  </para>
+	  <para><emphasis role='bold'>[ 参考文档 ]</emphasis></para>
+	  <itemizedlist>
+	    <listitem>
+	    </listitem>
+	  </itemizedlist>
+	</article>
+# Book skeleton
+snippet <book
+	<?xml version='1.0' encoding='utf-8'?>
+	
+	<!DOCTYPE book [
+	<!ENTITY fixme 'http://easwy.com/blog/'>
+	<!ENTITY myblog 'http://easwy.com/blog/'>
+	
+	<book xmlns='http://docbook.org/ns/docbook' xml:lang='zh-CN'
+	  xmlns:xlink='http://www.w3.org/1999/xlink'>
+	  <bookinfo>
+	    <title>${1:title}</title>
+	    <subtitle>${2:subtitle}</subtitle>
+	    <copyright>
+	      <year>${3:year}</year>
+	    </copyright>
+	    <author>
+	      <firstname>Easwy</firstname>
+	      <surname>Yang</surname>
+	      <affiliation>
+	      <address> <otheraddr> <link xlink:href='&myblog;'/> </otheraddr> </address>
+	      </affiliation>
+	    </author>
+	    <legalnotice>
+	      <para>本文采用<link xlink:href='http://creativecommons.org/licenses/by-nc-sa/2.5/cn/' xlink:show='new'>署名-非商业性使用-相同方式共享</link>的创作共用许可协议发布，转载本文必须也遵循署名-非商业性使用-相同方式共享。 </para>
+	      <para>转载请注明：<emphasis role='bold'>转载自<link xlink:href="&myblog;">易水博客</link> [  <link xlink:href="&myblog;"/> ] </emphasis> </para>
+	    </legalnotice>
+	  </bookinfo> 
+	
+	  <chapter xml:id='${4:id}'>
+	    <title>${5:title}</title>
+	    <para>
+	    ${6}
+	    </para>
+	  </chapter>
+	</book>
