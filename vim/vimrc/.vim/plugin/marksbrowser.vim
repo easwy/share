@@ -58,14 +58,15 @@ fun! s:ShowMarksWin(winNo)
     if a:winNo != -1
       call s:switchTo(a:winNo)
     else
-      exec "to sp" . escape(s:win_title, ' ')
-      let s:bufNo = bufnr('%')
+      "exec "to sp" . escape(s:win_title, ' ')
+      "let s:bufNo = bufnr('%')
+      call s:openWindow()
     endif
     call s:setupBindings()
     let s:isShown = 1
     call s:Fill(lines, lnum)
   else
-    close
+    call s:closeWindow()
   endif
 endf
 
@@ -198,3 +199,43 @@ fun! s:setupBindings()
   noremap <buffer> <silent> d :call <sid>deleteCurrent()<CR>
   noremap <buffer> <silent> q :call <sid>ToggleMarksBrowser()<CR>
 endf
+
+function! s:openWindow()
+  let origWinnr = winnr()
+  let _isf = &isfname
+  let _splitbelow = &splitbelow
+  set nosplitbelow
+  try
+    if s:bufNo == -1
+      " Temporarily modify isfname to avoid treating the name as a pattern.
+      set isfname-=\
+      set isfname-=[
+      if exists('+shellslash')
+        call genutils#OpenWinNoEa("10sp \\\\". escape(s:win_title, ' '))
+      else
+        call genutils#OpenWinNoEa("10sp \\". escape(s:win_title, ' '))
+      endif
+      let s:bufNo = bufnr('%')
+    else
+      let winnr = bufwinnr(s:bufNo)
+      if winnr == -1
+        call genutils#OpenWinNoEa('10sp '. s:bufNo)
+      else
+        let s:isShown = 1
+        exec winnr 'wincmd w'
+      endif
+    endif
+  finally
+    let &isfname = _isf
+    let &splitbelow = _splitbelow
+  endtry
+endfunction
+
+function! s:closeWindow()
+  if bufnr('%') != s:bufNo
+    return
+  endif
+
+  close
+endfunction
+
