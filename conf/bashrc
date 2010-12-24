@@ -4,7 +4,10 @@
 # Date    : Mon Oct 25 15:57:42 CST 2010
 
 #set nobeep
-#xset b off
+if [ $TERM == "rxvt" ]; then
+    xset b off
+fi
+
 setterm -blength 0
 
 # use vi mode
@@ -13,6 +16,8 @@ set -o vi
 # Useful alias
 alias .ee='vi ~/.bashrc'
 alias .ss='source ~/.bashrc'
+alias ll='ls -l'
+alias la='ls -a'
 
 PS1='\[\033[0;32m\]\u\[\033[00m\]@\[\033[0;32m\]\h\[\033[00m\] \W> '
 export PS1
