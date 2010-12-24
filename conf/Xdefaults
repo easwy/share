@@ -1,0 +1,38 @@
+! ~/.Xdefaults - X default resource settings
+Rxvt*geometry: 100x32
+!Rxvt*background: #000000
+!Rxvt*background: #294d4a
+Rxvt*background: #002020
+Rxvt*foreground: #ffffbf
+!Rxvt*borderColor: Blue
+!Rxvt*scrollColor: Blue
+!Rxvt*troughColor: Gray
+Rxvt*scrollBar: True
+Rxvt*scrollBar_right: True
+Rxvt*multichar_encoding: gb
+Rxvt*font: -*-fixed-medium-r-normal--*-*-*-*-*-*-iso8859-*
+Rxvt*boldFont: -*-fixed-bold-r-normal--*-*-*-*-*-*-iso8859-*
+Rxvt*mfont: -*-simsun-medium-r-normal--*-*-*-*-*-*-*-*
+Rxvt*SaveLines: 2000
+Rxvt*loginShell: True
+! VIM-like colors
+!Rxvt*color0: #000000
+!Rxvt*color1: #FFFFFF
+!Rxvt*color2: #00A800
+!Rxvt*color3: #FFFF00
+!Rxvt*color4: #0000A8
+!Rxvt*color5: #A800A8
+!Rxvt*color6: #00A8A8
+!Rxvt*color7: #D8D8D8
+!Rxvt*color8: #000000
+!Rxvt*color9: #FFFFFF
+!Rxvt*color10: #00A800
+!Rxvt*color11: #FFFF00
+!Rxvt*color12: #0000A8
+!Rxvt*color13: #A800A8
+!Rxvt*color14: #00A8A8
+!Rxvt*color15: #D8D8D8
+
+URxvt*font: -*-fixed-medium-r-normal--*-*-*-*-*-*-iso8859-*,\
+        -*-simsun-medium-r-normal--*-*-*-*-*-*-*-*
+! eof
