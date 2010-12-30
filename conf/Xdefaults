@@ -10,9 +10,9 @@ Rxvt*foreground: #ffffbf
 Rxvt*scrollBar: True
 Rxvt*scrollBar_right: True
 Rxvt*multichar_encoding: gb
-Rxvt*font: -*-fixed-medium-r-normal--12-*-*-*-*-*-iso8859-*
-Rxvt*boldFont: -*-fixed-bold-r-normal--12-*-*-*-*-*-iso8859-*
-Rxvt*mfont: -*-simsun-medium-r-normal--12-*-*-*-*-*-*-*
+Rxvt*font: -*-fixed-medium-r-normal--14-*-*-*-*-*-iso8859-*
+Rxvt*boldFont: -*-fixed-bold-r-normal--14-*-*-*-*-*-iso8859-*
+Rxvt*mfont: -*-simsun-medium-r-normal--14-*-*-*-*-*-*-*
 Rxvt*SaveLines: 2000
 Rxvt*loginShell: True
 ! VIM-like colors
@@ -33,6 +33,7 @@ Rxvt*loginShell: True
 !Rxvt*color14: #00A8A8
 !Rxvt*color15: #D8D8D8
 
-URxvt*font: -*-fixed-medium-r-normal--12-*-*-*-*-*-iso8859-*,\
-        -*-simsun-medium-r-normal--12-*-*-*-*-*-*-*
+URxvt*font: -*-fixed-medium-r-normal--14-*-*-*-*-*-iso8859-*,\
+        -*-simsun-medium-r-normal--14-*-*-*-*-*-*-*
+
 ! eof

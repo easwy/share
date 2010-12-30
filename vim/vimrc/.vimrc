@@ -195,10 +195,10 @@ endif
 "Set font
 if MySys() == "linux"
   if has("gui_gtk2")
-    "set guifontset=-*-*-medium-r-normal--16-*-*-*-c-*-*-*
-    set gfn=Bitstream\ Vera\ Sans\ Mono\ 9,SimSun\ 9
+    set gfn=Courier\ New\ 12,DejaVu\ Sans\ Mono\ 12,
+          \Bitstream\ Vera\ Sans\ Mono\ 12,SimSun\ 12,WenQuanYi\ Micro\ Hei\ Mono\ 12
   elseif has("x11")
-    set gfn=*-bitstream\ vera\ sans\ mono-medium-r-normal-*-*-*-*-*-m-*-*
+    set gfn=*-*-medium-r-normal--12-*-*-*-*-m-*-*
   endif
 endif
 
@@ -265,8 +265,8 @@ nmap <leader>fu :se ff=unix<cr>
 
 " Maximum window when GUI running
 if has("gui_running")
-  set lines=9999
-  set columns=9999
+  "set lines=9999
+  "set columns=9999
 endif
 
 "Turn on WiLd menu
@@ -631,7 +631,8 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    """"""""""""""""""""""""""""""
    " yank ring setting
    """"""""""""""""""""""""""""""
-   let g:yankring_enabled=0
+   let g:yankring_enabled=1
+   let g:yankring_history_file='.yankring_history_file'
    map <leader>yr :YRShow<cr>
 
    """"""""""""""""""""""""""""""
