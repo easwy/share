@@ -195,10 +195,11 @@ endif
 "Set font
 if MySys() == "linux"
   if has("gui_gtk2")
-    set gfn=Courier\ New\ 12,DejaVu\ Sans\ Mono\ 12,
-          \Bitstream\ Vera\ Sans\ Mono\ 12,SimSun\ 12,WenQuanYi\ Micro\ Hei\ Mono\ 12
+    set gfn=Courier\ New\ 10,Courier\ 10,Luxi\ Mono\ 10,
+          \DejaVu\ Sans\ Mono\ 10,Bitstream\ Vera\ Sans\ Mono\ 10,
+          \SimSun\ 10,WenQuanYi\ Micro\ Hei\ Mono\ 10
   elseif has("x11")
-    set gfn=*-*-medium-r-normal--12-*-*-*-*-m-*-*
+    set gfn=*-*-medium-r-normal--10-*-*-*-*-m-*-*
   endif
 endif
 
@@ -215,6 +216,7 @@ if !exists("g:vimrc_loaded")
         set guioptions-=r
         colorscheme darkblue_my
         "hi normal guibg=#294d4a
+        set cursorline
     else
         colorscheme desert_my
     endif " has
