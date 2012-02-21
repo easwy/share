@@ -490,7 +490,7 @@ function! <SID>BufcloseCloseIt()
    endif
 
    if buflisted(l:currentBufNum)
-     execute("bdelete! ".l:currentBufNum)
+     execute("bdelete ".l:currentBufNum)
    endif
 endfunction
 
@@ -655,23 +655,6 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    "Hide the help thing..
    let g:explDetailedHelp=0
 
-
-   """"""""""""""""""""""""""""""
-   " minibuffer setting
-   """"""""""""""""""""""""""""""
-   let loaded_minibufexplorer = 1         " *** Disable minibuffer plugin
-   let g:miniBufExplorerMoreThanOne = 2   " Display when more than 2 buffers
-   let g:miniBufExplSplitToEdge = 1       " Always at top
-   let g:miniBufExplMaxSize = 3           " The max height is 3 lines
-   let g:miniBufExplMapWindowNavVim = 1   " map CTRL-[hjkl]
-   let g:miniBufExplUseSingleClick = 1    " select by single click
-   let g:miniBufExplModSelTarget = 1      " Dont change to unmodified buffer
-   let g:miniBufExplForceSyntaxEnable = 1 " force syntax on
-   "let g:miniBufExplVSplit = 25
-   "let g:miniBufExplSplitBelow = 0
-
-   autocmd BufRead,BufNew :call UMiniBufExplorer
-
    """"""""""""""""""""""""""""""
    " bufexplorer setting
    """"""""""""""""""""""""""""""
@@ -709,27 +692,9 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    autocmd BufWinEnter \[Buf\ List\] setl nonumber
 
    """"""""""""""""""""""""""""""
-   " netrw setting
+   " NERDTree setting
    """"""""""""""""""""""""""""""
-   let g:netrw_winsize = 30
-   nmap <silent> <leader>fe :Sexplore!<cr>
-
-   """"""""""""""""""""""""""""""
-   " LaTeX Suite things
-   """"""""""""""""""""""""""""""
-"   set grepprg=grep\ -nH\ $*
-"   let g:Tex_DefaultTargetFormat="pdf"
-"   let g:Tex_ViewRule_pdf='xpdf'
-"
-"   "Bindings
-"   autocmd FileType tex map <silent><leader><space> :w!<cr> :silent! call Tex_RunLaTeX()<cr>
-"
-"   "Auto complete some things ;)
-"   autocmd FileType tex inoremap $i \indent
-"   autocmd FileType tex inoremap $* \cdot
-"   autocmd FileType tex inoremap $i \item
-"   autocmd FileType tex inoremap $m \[<cr>\]<esc>O
-
+   nmap <silent> <leader>tt :NERDTreeToggle<cr>
 
    """"""""""""""""""""""""""""""
    " lookupfile setting
@@ -816,6 +781,14 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    """"""""""""""""""""""""""""""
    let g:EclimTaglistEnabled=0
 
+   """"""""""""""""""""""""""""""
+   " FSwitch setting
+   """"""""""""""""""""""""""""""
+   au! BufEnter *.cc,*.cpp let b:fswitchdst = 'h' | let b:fswitchlocs = '.'
+   au! BufEnter *.h let b:fswitchdst = 'cc,cpp' | let b:fswitchlocs = '.'
+   let g:fsnonewfiles = "on"
+   nmap <silent> <Leader>of :FSHere<cr>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Filetype generic
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -883,7 +856,7 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    set diffopt+=vertical
 
    "Remove the Windows ^M
-   noremap <Leader>dm mmHmn:%s/<C-V><cr>//ge<cr>'nzt'm
+   noremap <Leader>dm mzHmx:%s/<C-V><cr>//ge<cr>'xzt'z:delm x z<cr>
 
    "Paste toggle - when pasting something in, don't indent.
    set pastetoggle=<F3>
