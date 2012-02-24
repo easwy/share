@@ -663,7 +663,7 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    let g:bufExplorerSortBy='mru'        " Sort by most recently used.
    let g:bufExplorerSplitRight=0        " Split left.
    let g:bufExplorerSplitVertical=1     " Split vertically.
-   let g:bufExplorerSplitVertSize = 30  " Split width
+   let g:bufExplorerSplitVertSize = 35  " Split width
    let g:bufExplorerUseCurrentWindow=1  " Open in new window.
    let g:bufExplorerMaxHeight=25        " Max height
 
@@ -684,7 +684,7 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    " winmanager setting
    """"""""""""""""""""""""""""""
    let g:winManagerWindowLayout = "BufExplorer,FileExplorer|TagList"
-   let g:winManagerWidth = 30
+   let g:winManagerWidth = 35
    let g:defaultExplorer = 0
    nmap <C-W><C-F> :FirstExplorerWindow<cr>
    nmap <C-W><C-B> :BottomExplorerWindow<cr>
@@ -788,6 +788,13 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    au! BufEnter *.h let b:fswitchdst = 'cc,cpp' | let b:fswitchlocs = '.'
    let g:fsnonewfiles = "on"
    nmap <silent> <Leader>of :FSHere<cr>
+
+   """"""""""""""""""""""""""""""
+   " Tagbar setting
+   """"""""""""""""""""""""""""""
+   let g:tagbar_width = 40
+   let g:tagbar_expand = 1
+   nmap <silent> <Leader>bb :TagbarToggle<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Filetype generic
