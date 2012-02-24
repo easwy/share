@@ -1,0 +1,13 @@
+[user]
+	email = easwy.mail@gmail.com
+	name = Easwy Yang
+[core]
+	editor = vim
+[merge]
+	tool = vimdiff
+[alias]
+	st = status
+	co = checkout
+	ci = commit
+[http]
+	sslVerify = false
