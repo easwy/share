@@ -3,11 +3,6 @@
 # Homepage: http://easwy.com/
 # Date    : Mon Oct 25 16:00:17 CST 2010
 
-# Don't use "window 0"
-bind c screen 1
-#bind 0 select 10
-screen 1
-
 # no welcome msg
 startup_message off
 
@@ -26,3 +21,7 @@ termcapinfo rxvt* 'hs:ts=\E]2;:fs=\007:ds=\E]2;\007'
 caption always "%{= kw}%-w%{= kG}%{+b}[%n %t]%{-b}%{= kw}%+w %=%d %M %0c %{g}%H%{-}"
 #hardstatus alwayslastline "%{= kw}%-w%{= kG}%{+b}[%n %t]%{-b}%{= kw}%+w %=%d %M %0c %{g}%H%{-}"
 #hardstatus alwayslastline '%{gk}[ %{G}%H %{g}][%= %{wk}%?%-Lw%?%{=b kR}[%{W}%n*%f %t%?(%u)%?%{=b kR}]%{= kw}%?%+Lw%?%?%= %{g}][%{Y}%l%{g}]%{=b C}[ %m/%d %c ]%{W}'
+screen -t Shell 1
+screen -t Work  2
+screen -t Android 3
+select 1
