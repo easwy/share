@@ -15,6 +15,7 @@ Rxvt*boldFont: -*-fixed-bold-r-normal--14-*-*-*-*-*-iso8859-*
 Rxvt*mfont: -*-simsun-medium-r-normal--14-*-*-*-*-*-*-*
 Rxvt*SaveLines: 2000
 Rxvt*loginShell: True
+Rxvt*visualBell: False
 ! VIM-like colors
 !Rxvt*color0: #000000
 !Rxvt*color1: #FFFFFF
@@ -35,5 +36,6 @@ Rxvt*loginShell: True
 
 URxvt*font: -*-fixed-medium-r-normal--14-*-*-*-*-*-iso8859-*,\
         -*-simsun-medium-r-normal--14-*-*-*-*-*-*-*
+URxvt*termName: rxvt
 
 ! eof
