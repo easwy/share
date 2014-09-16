@@ -88,6 +88,7 @@ set autoread
 "Set mapleader
 let mapleader = ","
 let g:mapleader = ","
+noremap \ ,
 
 "Fast saving
 nmap <silent> <leader>ww :w<cr>
@@ -101,9 +102,21 @@ nmap <silent> <leader>qa :qa<cr>
 
 "Fast remove highlight search
 nmap <silent> <leader><cr> :noh<cr>
+"nnoremap <silent> <c-l> :noh<cr><c-l>
 
 "Fast redraw
 nmap <silent> <leader>rr :redraw!<cr>
+
+" Command line history
+cnoremap <C-p> <Up>
+cnoremap <C-n> <Down>
+
+" Get active file path
+"cnoremap <expr> %% getcmdtype( ) == ':' ? expand('%:h').'/' : '%%'
+
+" substitute
+nnoremap & :&&<CR>
+xnoremap & :&&<CR>
 
 " For Thinkpad
 imap <F1> <ESC>
@@ -494,6 +507,18 @@ function! <SID>BufcloseCloseIt()
    endif
 endfunction
 
+" Copied from Qargs at this link:
+" https://github.com/nelstrom/vim-qargs/blob/master/plugin/qargs.vim
+command! -nargs=0 -bar Qargs execute 'args' QuickfixFilenames()
+function! QuickfixFilenames()
+  " Building a hash ensures we get each buffer only once
+  let buffer_numbers = {}
+  for quickfix_item in getqflist()
+    let buffer_numbers[quickfix_item['bufnr']] = bufname(quickfix_item['bufnr'])
+  endfor
+  return join(map(values(buffer_numbers), 'fnameescape(v:val)'))
+endfunction
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Session options
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -683,7 +708,7 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    """"""""""""""""""""""""""""""
    " winmanager setting
    """"""""""""""""""""""""""""""
-   let g:winManagerWindowLayout = "BufExplorer,FileExplorer|TagList"
+   let g:winManagerWindowLayout = "BufExplorer|TagList"
    let g:winManagerWidth = 35
    let g:defaultExplorer = 0
    nmap <C-W><C-F> :FirstExplorerWindow<cr>
@@ -695,6 +720,7 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    " NERDTree setting
    """"""""""""""""""""""""""""""
    nmap <silent> <leader>tt :NERDTreeToggle<cr>
+   nmap <silent> <leader>e. :e %:p:h<cr>
 
    """"""""""""""""""""""""""""""
    " lookupfile setting
@@ -784,9 +810,9 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    """"""""""""""""""""""""""""""
    " FSwitch setting
    """"""""""""""""""""""""""""""
-   au! BufEnter *.cc,*.cpp let b:fswitchdst = 'h' | let b:fswitchlocs = '.'
-   au! BufEnter *.h let b:fswitchdst = 'cc,cpp' | let b:fswitchlocs = '.'
-   let g:fsnonewfiles = "on"
+   au! BufEnter *.cc,*.cpp let b:fswitchdst = 'hpp,h' | let b:fswitchlocs = '.'
+   au! BufEnter *.h,*.hpp,*.hxx let b:fswitchdst = 'cpp,cc,c' | let b:fswitchlocs = '.'
+   "let g:fsnonewfiles = "off"
    nmap <silent> <Leader>of :FSHere<cr>
 
    """"""""""""""""""""""""""""""

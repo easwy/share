@@ -1,13 +1,15 @@
 [user]
-	email = easwy.mail@gmail.com
+	email = eyang@advaoptical.com
 	name = Easwy Yang
 [core]
 	editor = vim
+	excludesfile = ~/.gitignore_global
 [merge]
 	tool = vimdiff
 [alias]
 	st = status
 	co = checkout
 	ci = commit
+	list = diff-tree --no-commit-id --name-only -r
 [http]
 	sslVerify = false
