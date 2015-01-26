@@ -231,7 +231,7 @@ if !exists("g:vimrc_loaded")
         "hi normal guibg=#294d4a
         set cursorline
     else
-        colorscheme desert_my
+        colorscheme candy_my
     endif " has
 endif " exists(...)
 
