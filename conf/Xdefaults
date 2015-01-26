@@ -1,18 +1,37 @@
 ! ~/.Xdefaults - X default resource settings
-Rxvt*geometry: 100x32
-!Rxvt*background: #000000
-!Rxvt*background: #294d4a
-Rxvt*background: #002020
-Rxvt*foreground: #ffffbf
-!Rxvt*borderColor: Blue
-!Rxvt*scrollColor: Blue
-!Rxvt*troughColor: Gray
-Rxvt*scrollBar: True
-Rxvt*scrollBar_right: True
-Rxvt*multichar_encoding: gb
-Rxvt*font: -*-fixed-medium-r-normal--14-*-*-*-*-*-iso8859-*
-Rxvt*boldFont: -*-fixed-bold-r-normal--14-*-*-*-*-*-iso8859-*
-Rxvt*mfont: -*-simsun-medium-r-normal--14-*-*-*-*-*-*-*
+! to match gnome-terminal "Linux console" scheme
+! foreground/background
+URxvt*background: #000000
+URxvt*foreground: #ffffff
+! black
+URxvt.color0  : #000000
+URxvt.color8  : #555555
+! red
+URxvt.color1  : #AA0000
+URxvt.color9  : #FF5555
+! green
+URxvt.color2  : #00AA00
+URxvt.color10 : #55FF55
+! yellow
+URxvt.color3  : #AA5500
+URxvt.color11 : #FFFF55
+! blue
+URxvt.color4  : #0000AA
+URxvt.color12 : #5555FF
+! magenta
+URxvt.color5  : #AA00AA
+URxvt.color13 : #FF55FF
+! cyan
+URxvt.color6  : #00AAAA
+URxvt.color14 : #55FFFF
+! white
+URxvt.color7  : #AAAAAA
+URxvt.color15 : #FFFFFF
+
+URxvt.font: xft:Courier 10 Pitch:pixelsize=14:antialias=true:hinting=true:hintsyle=hintslight
+URxvt.boldFont: xft:Courier 10 Pitch:bold:pixelsize=14:antialias=true:hinting=true:hintsyle=hintslight
+URxvt*letterSpace: -1
+
 Rxvt*SaveLines: 2000
 Rxvt*loginShell: True
 Rxvt*visualBell: False
