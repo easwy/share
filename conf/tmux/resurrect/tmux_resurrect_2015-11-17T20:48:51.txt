@@ -1,0 +1,21 @@
+pane	0	1	:Work	0	:#	1	:/home/easwy/bin/ede-2/home/easwy/aos	1	vi	:sudo /home/easwy/bin/ede-2/rehome/reho -r -e /home/easwy/01ede:/home/easwy su - easwy
+pane	0	2	:Cmds	0	:#	1	:/home/easwy/bin/ede-2/home/easwy/aos/build-and-test	0	su	:sudo /home/easwy/bin/ede-2/rehome/reho -r -e /home/easwy/01ede:/home/easwy su - easwy
+pane	0	2	:Cmds	0	:#	2	:/home/easwy/bin/ede-2/home/easwy/aos/core-apps/sm	1	su	:sudo /home/easwy/bin/ede-2/rehome/reho -r -e /home/easwy/01ede:/home/easwy su - easwy
+pane	0	3	:Build	0	:#	1	:/home/easwy/bin/ede-2/home/easwy	0	su	:sudo /home/easwy/bin/ede-2/rehome/reho -r -e /home/easwy/01ede:/home/easwy su - easwy
+pane	0	3	:Build	0	:#	2	:/home/easwy/bin/ede-2/home/easwy/build/Test.x86/Build/sm	1	su	:sudo /home/easwy/bin/ede-2/rehome/reho -r -e /home/easwy/01ede:/home/easwy su - easwy
+pane	0	4	:VM	0	:-	1	:	0	ssh	:sudo /home/easwy/bin/ede-2/rehome/reho -r -e /home/easwy/01ede:easwy
+pane	0	4	:VM	0	:-	2	:	1	ssh	:sudo /home/easwy/bin/ede-2/rehome/reho -r -e /home/easwy/01ede:easwy
+pane	0	5	:Vm1	0	: 	1	:/home/easwy	0	zsh	:
+pane	0	5	:Vm1	0	: 	2	:/home/easwy	1	zsh	:
+pane	0	6	:Host	0	:#	1	:/home/easwy/tmp/vm/cc/opt/adva (deleted)	1	zsh	:
+pane	0	7	:Host1	0	: 	1	:	1	bash	:sudo /home/easwy/bin/ede-2/rehome/reho -r -e /home/easwy/01ede:easwy
+pane	0	8	:zsh	1	:*	1	:/home/easwy/tmp/vm	1	zsh	:
+window	0	1	0	:#	b3bd,177x60,0,0,0
+window	0	2	0	:#	09e2,177x60,0,0[177x30,0,0,1,177x29,0,31,7]
+window	0	3	0	:#	89e4,177x60,0,0[177x30,0,0,2,177x29,0,31,8]
+window	0	4	0	:-	0539,177x60,0,0[177x30,0,0,3,177x29,0,31,12]
+window	0	5	0	: 	0539,177x60,0,0[177x30,0,0,4,177x29,0,31,10]
+window	0	6	0	:#	b3c2,177x60,0,0,5
+window	0	7	0	: 	b3c3,177x60,0,0,6
+window	0	8	1	:*	5a12,177x60,0,0,13
+state	0	

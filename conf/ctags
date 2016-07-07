@@ -1,3 +1,7 @@
+--fields=+l
+--verbose=no
+--recurse=yes
+--tag-relative=yes
 --langdef=Scala
 --langmap=Scala:.scala
 --regex-Scala=/^[ \t]*(((implicit|private|public)?[ \t]*)*(\[[a-zA-Z0-9_]*\])?[ \t]*)*class[ \t]*([a-zA-Z0-9_]+)/\5/c,classes/
@@ -11,3 +15,5 @@
 --regex-Scala=/^[ \t]*type[ \t]*([a-zA-Z0-9_]+)[ \t]*[\[<>=]/\1/T,types/
 --regex-Scala=/^[ \t]*import[ \t]*([a-zA-Z0-9_{}., \t=>]+$)/\1/i,includes/
 --regex-Scala=/^[ \t]*package[ \t]*([a-zA-Z0-9_.]+$)/\1/p,packages/
+--exclude=target
+--exclude=.git

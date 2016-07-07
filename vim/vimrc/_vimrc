@@ -227,11 +227,17 @@ if !exists("g:vimrc_loaded")
         set guioptions-=m
         set guioptions-=L
         set guioptions-=r
-        colorscheme darkblue_my
+        "colorscheme darkblue_my
+        set background=dark
+        colorscheme solarized
         "hi normal guibg=#294d4a
         set cursorline
     else
         colorscheme candy_my
+        "set t_Co=256
+        "let g:solarized_termcolors=256
+        "set background=dark
+        "colorscheme solarized
     endif " has
 endif " exists(...)
 
@@ -821,6 +827,11 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    let g:tagbar_width = 40
    let g:tagbar_expand = 1
    nmap <silent> <Leader>bb :TagbarToggle<cr>
+
+   """"""""""""""""""""""""""""""
+   " PathOgen
+   """"""""""""""""""""""""""""""
+   execute pathogen#infect()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Filetype generic
