@@ -202,7 +202,7 @@ function! BufExplorer_ReSize()
   " the lines are pushed up and we see some lagging '~'s.
   let presRow = line(".")
   let presCol = virtcol(".")
-  exe $
+  "exe $
   let _scr = &scrolloff
   let &scrolloff = 0
   normal! z-

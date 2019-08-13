@@ -296,7 +296,8 @@ set ruler
 set cmdheight=2
 
 "Show line number
-set nu
+set number
+set relativenumber
 
 "Do not redraw, when running macros.. lazyredraw
 set lz
@@ -554,7 +555,8 @@ set shiftwidth=4
 
 map <leader>t2 :set shiftwidth=2<cr>
 map <leader>t4 :set shiftwidth=4<cr>
-au FileType html,python,vim,javascript,xml setl shiftwidth=2
+au FileType html,vim,javascript,xml setl shiftwidth=2
+au FileType python setl shiftwidth=4
 "au FileType html,python,vim,javascript setl tabstop=2
 "au FileType java,c,cpp setl shiftwidth=4
 "au FileType java setl tabstop=4
@@ -864,6 +866,15 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    """""""""""""""""""""""""""""""
    autocmd FileType c,cpp,xml  map <buffer> <leader><space> :make<cr>
    "autocmd FileType c,cpp  setl foldmethod=syntax | setl fen
+
+   " map to <Leader>ff in C++ code
+   let g:clang_format#detect_style_file = 1
+   autocmd FileType c,cpp nnoremap <buffer><Leader>ff :<C-u>ClangFormat<CR>
+   autocmd FileType c,cpp vnoremap <buffer><Leader>ff :ClangFormat<CR>
+   " if you install vim-operator-user
+   autocmd FileType c,cpp map <buffer><Leader>x <Plug>(operator-clang-format)
+   " Toggle auto formatting:
+   "nmap <Leader>C :ClangFormatAutoToggle<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MISC

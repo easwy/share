@@ -43,32 +43,32 @@
 ! To only apply colors to your terminal, for example, prefix
 ! the color assignment statement with its name. Example:
 !
-URxvt*background:            S_base03
+#URxvt*background:            S_black
 
-*background:              S_base03
-*foreground:              S_base0
-*fading:                  40
-*fadeColor:               S_base03
-*cursorColor:             S_base1
-*pointerColorBackground:  S_base01
-*pointerColorForeground:  S_base1
+#*background:              S_base03
+#*foreground:              S_base0
+#*fading:                  40
+#*fadeColor:               S_base03
+#*cursorColor:             S_base1
+#*pointerColorBackground:  S_base01
+#*pointerColorForeground:  S_base1
 
-*color0:                  S_base02
-*color1:                  S_red
-*color2:                  S_green
-*color3:                  S_yellow
-*color4:                  S_blue
-*color5:                  S_magenta
-*color6:                  S_cyan
-*color7:                  S_base2
-*color9:                  S_orange
-*color8:                  S_base03
-*color10:                 S_base01
-*color11:                 S_base00
-*color12:                 S_base0
-*color13:                 S_violet
-*color14:                 S_base1
-*color15:                 S_base3
+#*color0:                  S_base02
+#*color1:                  S_red
+#*color2:                  S_green
+#*color3:                  S_yellow
+#*color4:                  S_blue
+#*color5:                  S_magenta
+#*color6:                  S_cyan
+#*color7:                  S_base2
+#*color9:                  S_orange
+#*color8:                  S_base03
+#*color10:                 S_base01
+#*color11:                 S_base00
+#*color12:                 S_base0
+#*color13:                 S_violet
+#*color14:                 S_base1
+#*color15:                 S_base3
 
 URxvt.font: xft:Courier 10 Pitch:pixelsize=14:antialias=true:hinting=true:hintsyle=hintslight
 URxvt.boldFont: xft:Courier 10 Pitch:bold:pixelsize=14:antialias=true:hinting=true:hintsyle=hintslight
@@ -95,8 +95,8 @@ Rxvt*visualBell: False
 !Rxvt*color14: #00A8A8
 !Rxvt*color15: #D8D8D8
 
-URxvt*font: -*-fixed-medium-r-normal--14-*-*-*-*-*-iso8859-*,\
-        -*-simsun-medium-r-normal--14-*-*-*-*-*-*-*
+#URxvt*font: -*-fixed-medium-r-normal--14-*-*-*-*-*-iso8859-*,\
+#        -*-simsun-medium-r-normal--14-*-*-*-*-*-*-*
 URxvt*termName: rxvt
 
 ! eof
