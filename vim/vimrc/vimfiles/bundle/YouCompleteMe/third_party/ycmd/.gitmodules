@@ -1,0 +1,50 @@
+[submodule "third_party/OmniSharpServer"]
+	path = third_party/OmniSharpServer
+	url = https://github.com/nosami/OmniSharpServer
+[submodule "third_party/bottle"]
+	path = third_party/bottle
+	url = https://github.com/defnull/bottle
+[submodule "third_party/frozendict"]
+	path = third_party/frozendict
+	url = https://github.com/slezica/python-frozendict
+[submodule "third_party/waitress"]
+	path = third_party/waitress
+	url = https://github.com/Pylons/waitress
+[submodule "third_party/requests"]
+	path = third_party/requests_deps/requests
+	url = https://github.com/kennethreitz/requests
+[submodule "third_party/go/src/github.com/mdempsky/gocode"]
+	path = third_party/go/src/github.com/mdempsky/gocode
+	url = https://github.com/mdempsky/gocode
+	ignore = dirty
+[submodule "third_party/go/src/github.com/rogpeppe/godef"]
+	path = third_party/go/src/github.com/rogpeppe/godef
+	url = https://github.com/rogpeppe/godef
+	ignore = dirty
+[submodule "third_party/jedi"]
+	path = third_party/jedi_deps/jedi
+	url = https://github.com/davidhalter/jedi
+[submodule "third_party/parso"]
+	path = third_party/jedi_deps/parso
+	url = https://github.com/davidhalter/parso
+[submodule "third_party/racerd"]
+	path = third_party/racerd
+	url = https://github.com/jwilm/racerd
+[submodule "third_party/python-future"]
+	path = third_party/python-future
+	url = https://github.com/PythonCharmers/python-future
+[submodule "third_party/cregex"]
+	path = third_party/cregex
+	url = https://github.com/micbou/regex.git
+[submodule "third_party/urllib3"]
+	path = third_party/requests_deps/urllib3
+	url = https://github.com/urllib3/urllib3
+[submodule "third_party/chardet"]
+	path = third_party/requests_deps/chardet
+	url = https://github.com/chardet/chardet
+[submodule "third_party/certifi"]
+	path = third_party/requests_deps/certifi
+	url = https://github.com/certifi/python-certifi
+[submodule "third_party/idna"]
+	path = third_party/requests_deps/idna
+	url = https://github.com/kjd/idna
