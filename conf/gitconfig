@@ -1,15 +1,12 @@
 [user]
 	email = easwy.mail@gmail.com
 	name = Easwy Yang
-[core]
-	editor = vim
-	excludesfile = ~/.gitignore_global
-[merge]
-	tool = vimdiff
+
 [alias]
-	st = status
 	co = checkout
 	ci = commit
-	list = diff-tree --no-commit-id --name-only -r
-[http]
-	sslVerify = false
+	one = log --oneline
+	st = status
+	cf = clang-format
+	br = branch
+	cp = cherry-pick
